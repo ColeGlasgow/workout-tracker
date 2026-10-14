@@ -1,0 +1,3 @@
+# Pages live in public/; the drop box function stays out of it so its code is never served.
+[build]
+  publish = "public"
