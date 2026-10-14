@@ -11,11 +11,19 @@ My 5-day lifting app, built around my week: Tue–Thu before work at a small wor
 
 Open `public/index.html` in a browser.
 
-## Deploy
+## Test
 
 ```
-netlify deploy --prod
+npm install
+npx playwright install chromium webkit   # first time only
+npm test
 ```
+
+Playwright runs the real page on an iPhone-sized WebKit and an Android-sized Chromium. It logs sets, runs the rest timer, swaps lifts, starts a new cycle, restores a backup, mocks the drop box and loads the app offline. It also checks that no screen scrolls sideways and no card is clipped. Locally it compares three screenshots against the approved ones in `tests/app.spec.js-snapshots/`. After a change you meant to make, approve the new look with `npm run test:update`. GitHub Actions runs the same tests, minus the screenshots, on every push.
+
+## Deploy
+
+`npm run deploy` runs the tests first and only deploys if they pass. Plain `netlify deploy --prod` skips them.
 
 `netlify.toml` publishes `public/`. The function in `netlify/functions/api.mjs` stays out of it, so its code is never served.
 

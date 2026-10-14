@@ -1,2 +1,4 @@
 node_modules
 .netlify
+test-results
+playwright-report

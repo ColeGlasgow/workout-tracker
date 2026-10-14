@@ -114,6 +114,9 @@ input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appear
 .exp.c{background:var(--gng);color:var(--gn)}
 .exp.up{background:var(--gnb);color:var(--gn)}
 .swb{font-size:10px;font-weight:600;letter-spacing:.5px;padding:4px 10px;border-radius:20px;flex-shrink:0;margin-top:2px;background:var(--tx5);color:var(--tx2);cursor:pointer}
+.exa{display:flex;flex-wrap:wrap;gap:6px;padding:0 24px 10px}
+.exa:empty{display:none}
+.exa .exp,.exa .swb{margin-top:0}
 .swl{display:none;flex-wrap:wrap;gap:6px;padding:2px 24px 10px}
 .ex.swo .swl{display:flex}
 .swl button{padding:8px 12px;border-radius:10px;border:1px solid var(--s5);background:var(--s3);color:var(--tx2);font:500 13px var(--ff);cursor:pointer}
@@ -427,8 +430,10 @@ function rEx(d,ex){
   const ns=eS(ex),tid=ex.nm.replace(/\W/g,'');
   const up=!ex.nT&&!WK[cw].dl&&Array.from({length:ns},(_,i)=>pv(AW(),d.id,ex.nm,i)).every(p=>p&&p.d&&+p.r>=ex.rh);
   let ad=!ex.nT;if(!ex.nT)for(let i=0;i<ns;i++)if(!gd(AW(),d.id,ex.nm,i).d){ad=false;break}
-  let h=`<div class="ex ${ad&&!ex.nT?'dn':''}" id="e_${tid}"><div class="exh" onclick="this.parentElement.classList.toggle('op')"><div class="exn">${ex.nm}</div>${ex.nT?'':`<div class="swb" onclick="event.stopPropagation();hsT(this,'${KD[d.id+'|'+ex.nm]||d.id}','${ex.nm}')">History</div>`}${o.alt?`<div class="swb" onclick="event.stopPropagation();this.closest('.ex').classList.toggle('swo')">⇄ Swap</div>`:''}${up?'<div class="exp up">↑ ADD WEIGHT</div>':''}<div class="exp ${ex.tg}">${({s:'STR',h:'HYP',p:'PWR',c:'COND'})[ex.tg]}</div></div>`;
-  h+=`${o.alt?swl:''}<div class="hsl"></div><div class="exr">${ns} sets × ${ex.rl}${ex.rh!==ex.rl?'–'+ex.rh:''} · ${ex.rs>=60?Math.floor(ex.rs/60)+':'+String(ex.rs%60).padStart(2,'0'):ex.rs+'s'} rest</div><div class="exnt">${ex.nt}</div>`;
+  let h=`<div class="ex ${ad&&!ex.nT?'dn':''}" id="e_${tid}"><div class="exh" onclick="this.parentElement.classList.toggle('op')"><div class="exn">${ex.nm}</div><div class="exp ${ex.tg}">${({s:'STR',h:'HYP',p:'PWR',c:'COND'})[ex.tg]}</div></div>`;
+  h+=`<div class="exr">${ns} sets × ${ex.rl}${ex.rh!==ex.rl?'–'+ex.rh:''} · ${ex.rs>=60?Math.floor(ex.rs/60)+':'+String(ex.rs%60).padStart(2,'0'):ex.rs+'s'} rest</div>`;
+  h+=`<div class="exa">${up?'<div class="exp up">↑ ADD WEIGHT</div>':''}${ex.nT?'':`<div class="swb" onclick="hsT(this,'${KD[d.id+'|'+ex.nm]||d.id}','${ex.nm}')">History</div>`}${o.alt?`<div class="swb" onclick="this.closest('.ex').classList.toggle('swo')">⇄ Swap</div>`:''}</div>`;
+  h+=`${o.alt?swl:''}<div class="hsl"></div><div class="exnt">${ex.nt}</div>`;
   if(!ex.nT){
     h+=`<div class="st"><div class="sth"><span>Set</span><span>Lbs</span><span>Reps</span><span></span></div>`;
     for(let i=0;i<ns;i++){
