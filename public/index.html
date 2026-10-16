@@ -140,6 +140,12 @@ input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appear
 .sc.on{background:var(--gn);border-color:var(--gn);box-shadow:0 0 10px rgba(52,211,153,.25)}
 .sc svg{width:14px;height:14px;stroke:#000;fill:none;stroke-width:3;stroke-linecap:round;opacity:0;transition:opacity .1s}
 .sc.on svg{opacity:1}
+.wu{display:flex;flex-wrap:wrap;gap:6px;padding:0 24px 10px}
+.wul{width:100%;font-size:10px;font-weight:600;color:var(--tx4);letter-spacing:.5px;text-transform:uppercase}
+.wuc{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:54px;padding:5px 8px;border-radius:8px;background:var(--s3)}
+.wuc b{font:600 12px var(--fm);color:var(--tx2);white-space:nowrap}
+.wuc i{font:normal 10px var(--fm);color:var(--tx3);white-space:nowrap}
+.wuc.wk{box-shadow:inset 0 0 0 1px var(--ac)}
 .spv{font-family:var(--fm);font-size:10px;color:var(--tx4);text-align:center;grid-column:2/4;padding:0 0 4px}
 
 /* Superset */
@@ -293,19 +299,19 @@ const PG=[
     {nm:'Bent-Over Rear Delt Fly',tg:'h',s:3,rl:12,rh:20,rs:45,nt:'DBs, chest over your knees, slight bend in the elbows. Sweep wide, no shrugging.',m:['Rear Delts'],ss:'C',alt:['Cable Reverse Fly','Face Pulls']}]}
 ]},
 {id:'legs',n:'Wed',dw:3,t:'Legs',g:'Work gym',min:50,f:'Quads · Hamstrings · Calves · Abs',cl:'#34d399',sc:[
-  {n:'Strength',ex:[{nm:'Smith Squat',tg:'s',s:3,rl:8,rh:12,rs:150,nt:'Feet slightly in front of the bar, shoulder-width. Hips below parallel. Never grind on a short night.',m:['Quads','Glutes'],alt:['Bulgarian Split Squat','DB Goblet Squat']}]},
-  {n:'Hypertrophy',ex:[{nm:'Smith RDL',tg:'h',s:3,rl:8,rh:12,rs:75,nt:'One ramp set first. Push your hips back until you feel a deep hamstring stretch.',m:['Hamstrings','Glutes'],ss:'B',alt:['DB RDL','Single-Leg DB RDL']},
-    {nm:'Leg Extension',tg:'h',s:3,rl:10,rh:15,rs:75,nt:'Recline the seat if it adjusts. Pause 1s at the top.',m:['Quads'],ss:'B',alt:['Bulgarian Split Squat','Sissy Squat']},
+  {n:'Strength',ex:[{nm:'Smith Squat',tg:'s',s:3,rl:8,rh:12,rs:150,nt:'The bar moves with you, so set up like a barbell squat: bar over mid-foot, feet shoulder-width. Hips below parallel. Never grind on a short night.',m:['Quads','Glutes'],alt:['Bulgarian Split Squat','DB Goblet Squat']}]},
+  {n:'Hypertrophy',ex:[{nm:'Smith RDL',tg:'h',s:3,rl:8,rh:12,rs:75,nt:'One ramp set first. The bar can drift, so keep it touching your legs. Push your hips back until you feel a deep hamstring stretch.',m:['Hamstrings','Glutes'],ss:'B',alt:['DB RDL','Single-Leg DB RDL']},
+    {nm:'Standing Calf Raises',tg:'h',s:4,rl:8,rh:15,rs:60,nt:'Same Smith as the RDLs, toes on a plate, knees straight. 1–2s pause in the bottom stretch. Bar too wobbly? Swap to the DB version.',m:['Calves'],ss:'B',alt:['Single-Leg DB Calf Raise']},
     {nm:'Leg Curl',tg:'h',s:3,rl:8,rh:12,rs:60,nt:'Seated if that’s the machine. Slow on the way back.',m:['Hamstrings'],ss:'C',alt:['Nordic Ham Curl','Single-Leg DB RDL']},
-    {nm:'Standing Calf Raises',tg:'h',s:4,rl:8,rh:15,rs:60,nt:'Smith machine, toes on a plate, knees straight. 1–2s pause in the bottom stretch.',m:['Calves'],ss:'C',alt:['Single-Leg DB Calf Raise']}]},
+    {nm:'Leg Extension',tg:'h',s:3,rl:10,rh:15,rs:75,nt:'Recline the seat if it adjusts. Pause 1s at the top.',m:['Quads'],ss:'C',alt:['Bulgarian Split Squat','Sissy Squat']}]},
   {n:'Core',ex:[{nm:'Hanging Leg Raises',tg:'h',s:3,rl:8,rh:15,rs:45,nt:'Control the swing. Curl your hips up.',m:['Abs'],o:'pull',alt:['Cable Crunch']}]}
 ]},
 {id:'pull',n:'Thu',dw:4,t:'Shoulders, Arms + Lats',g:'Work gym',min:50,f:'Lats · Delts · Arms',cl:'#a78bfa',sc:[
-  {n:'Lats + Chest',ex:[{nm:'Wide Lat Pulldown',tg:'h',s:4,rl:8,rh:12,rs:75,nt:'Full stretch at the top, pull to your chest. The 4th set is on its own.',m:['Back','Biceps'],ss:'A',o:'upper',alt:['Bodyweight Pull-Ups','Close-Grip Pulldown']},
-    {nm:'Dips',tg:'h',s:3,rl:8,rh:15,rs:75,nt:'Bodyweight. Lean slightly forward, elbows to about 90°. All sets at 15? Take 3 seconds on the way down.',m:['Triceps','Chest','Front Delts'],ss:'A',alt:['Close-Grip Smith Press','Deficit Push-Ups']}]},
-  {n:'Delts',ex:[{nm:'Lateral Raises',tg:'h',s:4,rl:12,rh:20,rs:45,nt:'Light and strict. Last set: drop the weight and keep going.',m:['Side Delts'],ss:'B',alt:['Cable Lateral Raise','Lean-Away DB Lateral Raise']},
+  {n:'Downstairs · Chest + Delts',ex:[{nm:'Dips',tg:'h',s:3,rl:8,rh:15,rs:75,nt:'Bodyweight. Lean slightly forward, elbows to about 90°. All sets at 15? Take 3 seconds on the way down.',m:['Triceps','Chest','Front Delts'],ss:'A',alt:['Close-Grip Smith Press','Deficit Push-Ups']},
+    {nm:'Lateral Raises',tg:'h',s:4,rl:12,rh:20,rs:45,nt:'Light and strict. Last set: drop the weight and keep going.',m:['Side Delts'],ss:'A',alt:['Cable Lateral Raise','Lean-Away DB Lateral Raise']}]},
+  {n:'Upstairs · Lats + Rear Delts',ex:[{nm:'Wide Lat Pulldown',tg:'h',s:4,rl:8,rh:12,rs:75,nt:'Full stretch at the top, pull to your chest. The 4th set is on its own.',m:['Back','Biceps'],ss:'B',o:'upper',alt:['Bodyweight Pull-Ups','Close-Grip Pulldown']},
     {nm:'Face Pulls',tg:'h',s:3,rl:12,rh:20,rs:45,nt:'Rope to your forehead, rotate out. Hold 2s.',m:['Rear Delts'],ss:'B',alt:['Bent-Over Rear Delt Fly','Cable Reverse Fly']}]},
-  {n:'Arms',ex:[{nm:'Incline DB Curl',tg:'h',s:3,rl:8,rh:12,rs:60,nt:'45° bench, arms hang behind you. 3s down.',m:['Biceps'],ss:'C',alt:['Cable Curl','DB Curl']},
+  {n:'Upstairs · Arms',ex:[{nm:'Incline DB Curl',tg:'h',s:3,rl:8,rh:12,rs:60,nt:'45° bench, arms hang behind you. 3s down.',m:['Biceps'],ss:'C',alt:['Cable Curl','DB Curl']},
     {nm:'Triceps Pushdown',tg:'h',s:3,rl:10,rh:15,rs:60,nt:'Bar or rope. Elbows pinned to your sides, full lockout.',m:['Triceps'],ss:'C',alt:['DB Skull Crusher','Close-Grip Push-Ups']}]}
 ]},
 {id:'r1',n:'Fri',dw:5,t:'Active Recovery',f:'40 min easy bike or incline walk · Sleep',rst:1,cl:'#333'},
@@ -355,7 +361,43 @@ const _s=s=>{try{localStorage.setItem(LS,JSON.stringify(s))}catch{};psh()};
 const sk=(w,d,e,i)=>`${w}.${KD[d+'|'+e]||d}.${e}.${i}`;
 const gd=(w,d,e,i)=>gs()[sk(w,d,e,i)]||{w:'',r:'',d:false};
 const sd=(w,d,e,i,v)=>{const s=gs();s[sk(w,d,e,i)]=v;_s(s)};
-const pv=(w,d,e,i)=>{let p=w-1;if(w%5===0)p--;return p>=0?gd(p,d,e,i):null};
+// Next target for set i. Last time's set (newest of the past 4 weeks, deloads skipped) is scored with Epley,
+// counting the reps left in the tank at that week's RIR. Keep the weight while the predicted reps at this week's
+// RIR stay in range; past the top, add 5 lb until back in range; below the bottom, take 5 lb off.
+// Within a session, your newest logged set rescales the rest: beat its target (more reps, or more weight) and
+// the next sets go up; come up short and they come down. Next week builds on what you actually logged.
+// Pull-up/chin-up weight is added load, so bodyweight counts.
+const RQ=(w,ex)=>w%5===3&&ex.tg!=='h'?1.5:[3.5,2.5,1.5,.5,4][w%5];  // W1..W4, DL. Big lifts stay at 1-2 in W4
+const INC=5;  // ponytail: one step for every lift; per-lift steps if a cable stack jumps 10
+const BW=()=>{const d=Object.keys(HL).sort().reverse().find(k=>+HL[k].weight>0);return d?+HL[d].weight:A.wt};
+function tgt(d,ex,i,live=1){const st=gs(),w=AW();let p,pw;
+  for(pw=w-1;pw>=Math.max(0,w-5);pw--){if(pw%5===4)continue;const v=st[sk(pw,d,ex.nm,i)];if(v?.d&&+v.r>0){p=v;break}}
+  if(!p)return null;
+  const qn=RQ(w,ex),qp=RQ(pw,ex),r=+p.r,lw=+p.w||0,bw=/Pull-Up|Chin-Up/.test(ex.nm)?BW():0;
+  if(!lw&&!bw)return{p,w:'',r:Math.max(1,Math.min(ex.rh,Math.round(r+qp-qn)))};
+  const e0=(lw+bw)*(1+(r+qp)/30);let e=e0,x=lw;
+  if(live)for(let j=i-1;j>=0;j--){const c=st[sk(w,d,ex.nm,j)];if(!c?.d)continue;
+    const b=tgt(d,ex,j,0);if(b?.e&&(+c.w>0||bw)){e*=(+c.w+bw)*(1+(+c.r+qn)/30)/b.e;x=+c.w||0}break}
+  const at=x=>Math.round(30*(e/(x+bw)-1)-qn);
+  if(at(x)>ex.rh)while(at(x)>ex.rh)x+=INC;else while(at(x)<ex.rl&&x-INC>=(bw?0:INC))x-=INC;
+  return{p,e:e0,w:x||'',r:Math.max(1,at(x)),dw:x-lw}}
+// Warm-ups for the big lifts, ramped up to set 1's weight (what you typed, else the target). Barbell loads round so
+// each side is whole 5s, with the plates per side on a 45 lb bar. Pull-ups and chin-ups warm up at bodyweight.
+const PL=[45,35,25,10,5,2.5],BB=/Barbell|Hang Clean/;
+const side=x=>{let r=(x-45)/2;const o=[];for(const p of PL)while(r>=p){o.push(p);r-=p}return o.join('+')||'bar'};
+function wuH(ex,W){W=+W||0;const bb=BB.test(ex.nm),bw=/Pull-Up|Chin-Up/.test(ex.nm),st=[];
+  if(!W&&!bw)return'<div class="wul">Warm-up · type set 1’s weight</div>';
+  if(bw){st.push(['BW',5]);if(W>=20)st.push([5*Math.round(W/10),3])}
+  else{for(const[f,r]of ex.rh<=8?[[.5,5],[.7,3],[.85,1]]:[[.5,8],[.75,4]]){const x=bb?45+10*Math.round((W*f-45)/10):5*Math.round(W*f/5);
+      if(x>(bb?45:0)&&x<W&&!st.some(s=>s[0]===x))st.push([x,r])}}
+  return`<div class="wul">Warm-up${bb||/Trap Bar/.test(ex.nm)?' · bar × 10 first':''}${bb?' · plates a side':''}</div>`+st.map(([x,r])=>`<div class="wuc"><b>${bw&&x!=='BW'?'+'+x:x} × ${r}</b>${bb?`<i>${side(x)}</i>`:''}</div>`).join('')
+    +(W?`<div class="wuc wk"><b>${bw?'+'+W:W}</b><i>${bb?side(W):'work sets'}</i></div>`:'')}
+const tW=t=>t?t.w||'BW':'lbs',tR=(t,ex)=>t?t.r:ex.rl+'–'+ex.rh;
+const tL=t=>t?`prev ${t.p.w||'BW'} × ${t.p.r} · target ${t.w||'BW'} × ${t.r}${t.dw?` (${t.dw>0?'+':'−'}${Math.abs(t.dw)} lb)`:''}`:'';
+// After a set is logged or cleared, refresh the targets on that lift's open sets in place (keeps focus and scroll)
+const EX={};
+function rT(d,tid,ns){const ex=EX[tid];for(let k=0;k<ns;k++){const row=document.getElementById(`r_${tid}_${k}`);if(!row||row.classList.contains('dn'))continue;
+  const t=tgt(d,ex,k),[wi,ri]=row.querySelectorAll('input'),s=document.getElementById(`p_${tid}_${k}`);wi.placeholder=tW(t);ri.placeholder=tR(t,ex);if(s)s.textContent=tL(t)}}
 const eS=ex=>{const m=WK[cw].vm;return Math.max(1,ex.s+(!ex.nT&&ex.tg!=='p'&&ex.tg!=='c'?Math.round(m*(ex.s/3)):0))};
 
 // Timer: counts to a clock time, so it's right after the phone locks; beeps at zero (iPhones ignore vibrate)
@@ -428,35 +470,41 @@ function rEx(d,ex){
   const o=ex,snm=SN(d.id,ex);if(snm!==ex.nm)ex={...ex,nm:snm,nt:`Swapped in for ${o.nm} this week. Same sets and reps.`};
   const swl=`<div class="swl">${[o.nm,...(o.alt||[])].map(n=>`<button class="${n===snm?'on':''}" onclick="swp('${d.id}','${o.nm}','${n}')">${n}${n===o.nm?' · planned':''}</button>`).join('')}</div>`;
   const ns=eS(ex),tid=ex.nm.replace(/\W/g,'');
-  const up=!ex.nT&&!WK[cw].dl&&Array.from({length:ns},(_,i)=>pv(AW(),d.id,ex.nm,i)).every(p=>p&&p.d&&+p.r>=ex.rh);
+  EX[tid]=ex;const T=Array.from({length:ex.nT?0:ns},(_,i)=>tgt(d.id,ex,i)),up=WK[cw].dl?0:Math.max(0,...T.map(t=>t?.dw||0));
   let ad=!ex.nT;if(!ex.nT)for(let i=0;i<ns;i++)if(!gd(AW(),d.id,ex.nm,i).d){ad=false;break}
   let h=`<div class="ex ${ad&&!ex.nT?'dn':''}" id="e_${tid}"><div class="exh" onclick="this.parentElement.classList.toggle('op')"><div class="exn">${ex.nm}</div><div class="exp ${ex.tg}">${({s:'STR',h:'HYP',p:'PWR',c:'COND'})[ex.tg]}</div></div>`;
   h+=`<div class="exr">${ns} sets × ${ex.rl}${ex.rh!==ex.rl?'–'+ex.rh:''} · ${ex.rs>=60?Math.floor(ex.rs/60)+':'+String(ex.rs%60).padStart(2,'0'):ex.rs+'s'} rest</div>`;
-  h+=`<div class="exa">${up?'<div class="exp up">↑ ADD WEIGHT</div>':''}${ex.nT?'':`<div class="swb" onclick="hsT(this,'${KD[d.id+'|'+ex.nm]||d.id}','${ex.nm}')">History</div>`}${o.alt?`<div class="swb" onclick="this.closest('.ex').classList.toggle('swo')">⇄ Swap</div>`:''}</div>`;
+  h+=`<div class="exa">${up?`<div class="exp up">↑ ADD ${up} LB</div>`:''}${ex.nT?'':`<div class="swb" onclick="hsT(this,'${KD[d.id+'|'+ex.nm]||d.id}','${ex.nm}')">History</div>`}${o.alt?`<div class="swb" onclick="this.closest('.ex').classList.toggle('swo')">⇄ Swap</div>`:''}</div>`;
   h+=`${o.alt?swl:''}<div class="hsl"></div><div class="exnt">${ex.nt}</div>`;
+  if(ex.tg==='s'||ex.tg==='p')h+=`<div class="wu" id="w_${tid}">${wuH(ex,+gd(AW(),d.id,ex.nm,0).w||T[0]?.w)}</div>`;
   if(!ex.nT){
     h+=`<div class="st"><div class="sth"><span>Set</span><span>Lbs</span><span>Reps</span><span></span></div>`;
     for(let i=0;i<ns;i++){
-      const dt=gd(AW(),d.id,ex.nm,i),p=pv(AW(),d.id,ex.nm,i);
-      const ps=p&&(p.w||p.r)?`prev ${p.w||'—'} × ${p.r||'—'}`:'';
+      const dt=gd(AW(),d.id,ex.nm,i),t=T[i];
+      const ps=tL(t);
       h+=`<div class="sr ${dt.d?'dn':''}" id="r_${tid}_${i}"><div class="sn">${i+1}</div>`;
-      h+=`<input type="number" inputmode="decimal" placeholder="${p?.w||'lbs'}" value="${dt.w}" oninput="oI('${d.id}','${ex.nm}',${i},'w',this.value)" onfocus="this.select()">`;
-      h+=`<input type="number" inputmode="numeric" placeholder="${ex.rl}–${ex.rh}" value="${dt.r}" oninput="oI('${d.id}','${ex.nm}',${i},'r',this.value)" onfocus="this.select()">`;
-      h+=`<div class="sc ${dt.d?'on':''}" onclick="tgM('${d.id}','${ex.nm}',${i},${ex.rs},'${tid}',${ns})"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div></div>`;
-      if(ps)h+=`<div class="spv">${ps}</div>`;
+      const tg=`'${d.id}','${ex.nm}',${i},${ex.rs},'${tid}',${ns}`;
+      h+=`<input type="number" inputmode="decimal" placeholder="${tW(t)}" value="${dt.w}" oninput="oI('${d.id}','${ex.nm}',${i},'w',this.value)" onchange="aL(${tg})" onfocus="this.select()">`;
+      h+=`<input type="number" inputmode="numeric" placeholder="${tR(t,ex)}" value="${dt.r}" oninput="oI('${d.id}','${ex.nm}',${i},'r',this.value)" onchange="aL(${tg})" onfocus="this.select()">`;
+      h+=`<div class="sc ${dt.d?'on':''}" onclick="tgM(${tg})"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div></div>`;
+      if(ps)h+=`<div class="spv" id="p_${tid}_${i}">${ps}</div>`;
     }h+=`</div>`;
   }return h+`</div>`;
 }
 
-// Typing only saves. Tap the circle to log; empty boxes take last week's numbers.
-function oI(d,e,i,f,v){const dt=gd(AW(),d,e,i);dt[f]=v;sd(AW(),d,e,i,dt)}
+// Typing only saves. A row logs itself when you leave a box with both filled (change fires on blur,
+// so a half-typed "1" of "12" never logs). Or tap the circle; empty boxes take the target shown in them.
+function oI(d,e,i,f,v){const dt=gd(AW(),d,e,i);dt[f]=v;sd(AW(),d,e,i,dt);
+  const tid=e.replace(/\W/g,''),wu=!i&&f==='w'&&document.getElementById('w_'+tid);if(wu)wu.innerHTML=wuH(EX[tid],v||document.querySelector(`#r_${tid}_0 input`).placeholder)}
+function aL(d,e,i,rs,tid,ns){const [wi,ri]=document.querySelectorAll(`#r_${tid}_${i} input`);if(wi.value&&ri.value&&!gd(AW(),d,e,i).d)tgM(d,e,i,rs,tid,ns)}
 function tgM(d,e,i,rs,tid,ns){
   const dt=gd(AW(),d,e,i),row=document.getElementById(`r_${tid}_${i}`),ck=row.querySelector('.sc'),[wi,ri]=row.querySelectorAll('input');
-  if(!dt.d){const p=pv(AW(),d,e,i);if(!wi.value&&p?.w)wi.value=p.w;if(!ri.value&&p?.r)ri.value=p.r;if(!ri.value){ri.focus();return}dt.w=wi.value;dt.r=ri.value}
+  if(dt.d&&Date.now()-dt.t<500)return;  // tapping the circle blurs the box, which already logged it: don't undo
+  if(!dt.d){if(!wi.value&&+wi.placeholder)wi.value=wi.placeholder;if(!ri.value&&/^\d+$/.test(ri.placeholder))ri.value=ri.placeholder;if(!ri.value){ri.focus();return}dt.w=wi.value;dt.r=ri.value}
   dt.d=!dt.d;if(dt.d)dt.t=Date.now();sd(AW(),d,e,i,dt);
   row.classList.toggle('dn',dt.d);ck.classList.toggle('on',dt.d);
   if(dt.d){wake();if(rs>0)stT(rs,nxt(d,e,i));if(navigator.vibrate)navigator.vibrate(12)}
-  chkEx(d,e,tid,ns);chkWo(d);
+  chkEx(d,e,tid,ns);chkWo(d);rT(d,tid,ns);
 }
 // What's next: supersets alternate (A1 set 1, A2 set 1, A1 set 2...), everything else goes set by set
 function nxt(did,cn,ci){
@@ -530,7 +578,7 @@ function rP(){
   h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">Your Week</b> — Tue–Thu at the work gym, 45–50 min, using only DBs, cables, the Smith, the pull-up/dip station, leg extension and leg curl. Legs are Wed and Sat, 3–4 days apart. Heavy barbell work is on the weekend at Crunch, about 65 min each day. Only one weekend day free? Do Full Body instead.</p><p style="margin-bottom:10px"><b style="color:var(--tx)">Effort Ramp</b> — Sets stay the same each week so sessions fit. Effort climbs instead: W1 3–4 RIR → W4 0–1 RIR → W5 recovery.</p>`;
   h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">RIR</b> — Reps in Reserve. 3–4 in W1, down to 0–1 by W4 on isolation lifts. Big lifts stay at 1–2.</p>`;
   h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">Next Cycle</b> — In the DL week, tap Start cycle 2. Your history stays, and W1 shows your last W4 numbers. Swap exercises every 2–3 mesocycles.</p>`;
-  h+=`<p><b style="color:var(--tx)">Logging</b> — Tap the circle to log a set. Empty boxes take last week’s numbers. ↑ ADD WEIGHT means you hit the top of the range on every set last week.</p><p style="margin-top:10px"><b style="color:var(--tx)">Rest Timer</b> — Starts when you log. It keeps time when your phone locks, beeps at zero and shows what’s next. Tap “Next” to jump there.</p><p style="margin-top:10px"><b style="color:var(--tx)">Swap</b> — Machine taken or no room? Tap ⇄ Swap on any lift and pick a stand-in. It lasts for this week only and keeps its own history.</p></div></div>`;
+  h+=`<p><b style="color:var(--tx)">Logging</b> — The gray numbers in each set are your target, worked out from last time and this week’s RIR. Fill both boxes, or tap the circle to log the target as is. Targets move as you go: beat one (more reps, or more weight) and your next sets go up; come up short and they come down. Next week builds on what you actually logged. ↑ ADD 5 LB is the most a target went up from last time.</p><p style="margin-top:10px"><b style="color:var(--tx)">Rest Timer</b> — Starts when you log. It keeps time when your phone locks, beeps at zero and shows what’s next. Tap “Next” to jump there.</p><p style="margin-top:10px"><b style="color:var(--tx)">Swap</b> — Machine taken or no room? Tap ⇄ Swap on any lift and pick a stand-in. It lasts for this week only and keeps its own history.</p></div></div>`;
   const lb=+localStorage.getItem('rf5b')||0;
   h+=`<div class="pc"><div class="pct">Garmin · Apple Health</div><div id="syncMsg" style="padding:4px 20px 12px;font-size:13px;color:var(--tx3);line-height:1.5">${HK?syncMsg||'Connected.':'Not connected. Paste your drop box key to pull in sleep, weight, resting heart rate and steps, and to back up your log automatically.'}</div><div class="wrw" style="padding:0 20px 18px;margin:0"><input id="kIn" type="password" autocomplete="off" placeholder="${HK?'Key saved · paste to replace':'Paste your key'}" aria-label="Drop box key"><button class="bkb" onclick="svK()">${HK?'Replace':'Connect'}</button></div></div>`;
   h+=`<div class="pc"><div class="pct">Your Data</div><div style="padding:4px 20px 14px;font-size:13px;color:var(--tx3);line-height:1.5">${HK?'Backs up to your drop box after every set.':'Saved on this phone only.'} ${lb?'Last backup '+new Date(lb).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'Never backed up'}.</div><div class="bkr"><button class="bkb" onclick="bkS()">Save backup</button><label class="bkb">Restore<input type="file" accept=".json,application/json" onchange="bkR(this)" style="position:absolute;opacity:0;width:1px;height:1px"></label></div></div>`;

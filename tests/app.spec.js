@@ -71,7 +71,7 @@ test('Saturday offers both weekend options', async ({ page }) => {
   await expect(page.locator('.dy.today .dy-nm')).toHaveText([/^Sat · Heavy Legs/, /^Sat or Sun · Full Body/]);
 });
 
-test('typing never logs a set; tapping the circle logs last week’s numbers', async ({ page }) => {
+test('typing alone never logs a set; tapping the circle logs the target', async ({ page }) => {
   await open(page, { store: lastWeek });
   await day(page, DAY.tue);
   const r = row(page, 'Incline DB Press', 0), [lb, reps] = [r.locator('input').nth(0), r.locator('input').nth(1)];
@@ -80,15 +80,86 @@ test('typing never logs a set; tapping the circle logs last week’s numbers', a
   await reps.fill('');
   await r.locator('.sc').click();
   await expect(r).toHaveClass(/\bdn\b/);
-  await expect(lb).toHaveValue('60');
-  await expect(reps).toHaveValue('10');
-  expect((await saved(page))['1.push.Incline DB Press.0']).toMatchObject({ w: '60', r: '10', d: true });
+  await expect(lb).toHaveValue('65');  // last week 60×10 at the top of 6-10, so up a step
+  await expect(reps).toHaveValue('8');
+  expect((await saved(page))['1.push.Incline DB Press.0']).toMatchObject({ w: '65', r: '8', d: true });
 });
 
-test('the add-weight cue shows only when last week topped the range', async ({ page }) => {
+test('a filled-in row logs itself once you leave the box', async ({ page }) => {
+  await open(page, { install: true });
+  await day(page, DAY.tue);
+  const r = row(page, 'Incline DB Press', 0), [lb, reps] = [r.locator('input').nth(0), r.locator('input').nth(1)];
+  await lb.fill('60');
+  await lb.blur();
+  await expect(r).not.toHaveClass(/\bdn\b/);  // reps still empty
+  await reps.pressSequentially('1');
+  await expect(r).not.toHaveClass(/\bdn\b/);  // still typing: the 1 of 10
+  await reps.pressSequentially('0');
+  await r.locator('.sc').click();  // out of habit: leaving the box logs it, and this tap must not undo it
+  await expect(r).toHaveClass(/\bdn\b/);
+  await expect(page.locator('#tN')).toHaveText('Next: Weighted Pull-Ups · set 1');
+  expect((await saved(page))['0.push.Incline DB Press.0']).toMatchObject({ w: '60', r: '10', d: true });
+});
+
+// W1 (3-4 RIR) → W2 (2-3 RIR). Worked by hand: Epley max = lb × (1 + (reps + RIR left) / 30).
+test('targets come from last time and this week’s RIR', async ({ page }) => {
+  const set = (lift, i, w, r) => [`0.${lift}.${i}`, { w, r, d: true }];
+  await open(page, { store: { rf5w: '1', rf5: Object.fromEntries([
+    set('push.Incline DB Press', 0, '60', '10'),  // max 87 → 60 would be 11, past the top → 65 × 8
+    set('push.Incline DB Press', 1, '60', '8'),   // 60 would be 9, in range → keep 60, one more rep
+    set('push.Incline DB Press', 2, '60', '4'),   // 60 would be 5, under the bottom → 55 × 8
+    set('pull.Weighted Pull-Ups', 0, '25', '10'), // 197 lb bodyweight + 25 → +30 × 10
+    set('pull.Dips', 0, '', '12')]) } });          // bodyweight: one more rep
+  const want = async (lift, i, lb, reps) => {
+    const [w, r] = [0, 1].map(n => row(page, lift, i).locator('input').nth(n));
+    await expect(w).toHaveAttribute('placeholder', lb);
+    await expect(r).toHaveAttribute('placeholder', reps);
+  };
+  await day(page, DAY.tue);
+  await want('Incline DB Press', 0, '65', '8');
+  await want('Incline DB Press', 1, '60', '9');
+  await want('Incline DB Press', 2, '55', '8');
+  await want('Incline DB Press', 3, 'lbs', '6–10');  // nothing logged: no target
+  await want('Weighted Pull-Ups', 0, '30', '10');
+  await expect(page.locator('#e_InclineDBPress .spv').first()).toHaveText('prev 60 × 10 · target 65 × 8 (+5 lb)');
+  await back(page);
+  await day(page, DAY.thu);
+  await want('Dips', 0, 'BW', '13');
+});
+
+test('targets follow the sets you just did', async ({ page }) => {
+  await open(page, { store: lastWeek });  // W1: 60 × 10, 10, 11, 10 → W2 targets 65 × 8, 8, 9, 8
+  await day(page, DAY.tue);
+  const want = async (i, lb, reps) => {
+    await expect(row(page, 'Incline DB Press', i).locator('input').nth(0)).toHaveAttribute('placeholder', lb);
+    await expect(row(page, 'Incline DB Press', i).locator('input').nth(1)).toHaveAttribute('placeholder', reps);
+  };
+  await log(page, 'Incline DB Press', 0, 70, 8);  // went heavier than 65 and still got 8: stronger than last week
+  await want(1, '70', '8');
+  await expect(page.locator('#p_InclineDBPress_1')).toHaveText('prev 60 × 10 · target 70 × 8 (+10 lb)');
+  await log(page, 'Incline DB Press', 1, 70, 4);  // too heavy: 4 reps
+  await want(2, '65', '8');
+});
+
+test('warm-ups ramp up to set 1 with the plates for each side', async ({ page }) => {
+  await open(page, { time: SAT, store: lastWeek });
+  await day(page, DAY.sat);
+  const wu = page.locator('#w_BarbellBackSquat');
+  await expect(wu).toHaveText('Warm-up · type set 1’s weight');  // never squatted here: no target yet
+  await row(page, 'Barbell Back Squat', 0).locator('input').nth(0).fill('225');
+  await expect(wu.locator('.wul')).toHaveText('Warm-up · bar × 10 first · plates a side');
+  await expect(wu.locator('.wuc b')).toHaveText(['115 × 5', '155 × 3', '195 × 1', '225']);
+  await expect(wu.locator('.wuc i')).toHaveText(['35', '45+10', '45+25+5', '45+45']);
+  await back(page);
+  await day(page, DAY.tue);
+  await expect(page.locator('#w_InclineDBPress .wuc b')).toHaveText(['35 × 8', '50 × 4', '65']);  // from the 65 target
+  await expect(page.locator('#w_WeightedPullUps .wuc b')).toHaveText(['BW × 5']);
+});
+
+test('the add-weight cue shows only when a target goes up', async ({ page }) => {
   await open(page, { store: lastWeek });
   await day(page, DAY.tue);
-  await expect(page.locator('#e_InclineDBPress .exp.up')).toHaveText(/ADD WEIGHT/);
+  await expect(page.locator('#e_InclineDBPress .exp.up')).toHaveText('↑ ADD 5 LB');
   await expect(page.locator('#e_WeightedPullUps .exp.up')).toHaveCount(0);
 });
 
