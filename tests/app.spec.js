@@ -110,6 +110,7 @@ test('targets come from last time’s best set, one rep better', async ({ page }
     set('push.Incline DB Press', 1, '60', '8'),
     set('push.Incline DB Press', 2, '60', '135'),  // a weight typed into the reps box: ignored
     set('push.Seated Cable Row', 0, '100', '9'),   // in range → same weight, one more rep
+    set('push.Lateral Raises', 0, '20', '20'),     // top of 12-20 → 25; Epley says 11 but a step up starts at 12
     set('push.Cable Flyes (Low→High)', 0, '150', '6'),  // under the bottom of 10-15 → 140 × 10
     set('pull.Weighted Pull-Ups', 0, '25', '10'),  // 197 lb bodyweight + 25 → +30 × 10
     set('pull.Dips', 0, '', '12')]) } });           // bodyweight: one more rep
@@ -123,6 +124,7 @@ test('targets come from last time’s best set, one rep better', async ({ page }
   await expect(page.locator('#p_InclineDBPress_0')).toHaveText('prev 60 × 10 · target 65 × 8 (+5 lb)');
   await expect(page.locator('#p_InclineDBPress_2')).toHaveText('target 65 × 8 (+5 lb)');
   await want('Seated Cable Row', 0, '100', '10');
+  await want('Lateral Raises', 0, '25', '12');
   await want('Cable Flyes (Low→High)', 0, '140', '10');
   await want('Weighted Pull-Ups', 0, '30', '10');
   await back(page);
@@ -171,6 +173,21 @@ test('a new week starts on its own once the last one has sets', async ({ page, c
   await open(dl, { store: { rf5w: '4', rf5: one(4, '2026-10-11') } });  // deload done → next cycle
   await expect(dl.locator('.si.on')).toHaveText('W1');
   await expect(dl.locator('#v_home .hd-s')).toHaveText("Cole's Training · Cycle 2");
+});
+
+test('weekly weigh-ins give a trend, not one noisy week against another', async ({ page }) => {
+  const rf5h = { '2026-09-22': { weight: 196.0 }, '2026-09-29': { weight: 196.6 }, '2026-10-06': { weight: 196.2 } };
+  await open(page, { store: { rf5h } });
+  await tab(page, 1);
+  const card = page.locator('.gc', { hasText: 'Body' });
+  await expect(card).toContainText('1 more weekly weigh-in unlocks your gain rate');
+  await tab(page, 0);
+  await page.evaluate(() => { const h = JSON.parse(localStorage.rf5h); h['2026-10-13'] = { weight: 197.1 }; localStorage.rf5h = JSON.stringify(h) });
+  await page.reload();
+  await tab(page, 1);
+  await expect(card).toContainText('197.1');  // last weigh-in, Oct 13
+  await expect(card).toContainText('+1.2');   // line fit by hand: 0.041 lb a day
+  await expect(card).toContainText('On track');
 });
 
 test('the add-weight cue shows only when a target goes up', async ({ page }) => {

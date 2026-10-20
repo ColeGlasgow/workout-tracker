@@ -389,8 +389,10 @@ function tgt(d,ex,i,live=1){const st=gs(),w=AW(),bw=/Pull-Up|Chin-Up/.test(ex.nm
   if(live)for(let j=i-1;j>=0;j--){const c=st[sk(w,d,ex.nm,j)];if(!c?.d)continue;
     if(okS(c)&&(+c.w>0||bw)){e=(+c.w+bw)*(1+(+c.r+qn)/30);x=+c.w||0}break}
   const at=x=>Math.round(30*(e/(x+bw)-1)-qn);
-  if(at(x)>ex.rh)while(at(x)>ex.rh)x+=INC;else while(at(x)<ex.rl&&x-INC>=(bw?0:INC)&&at(x-INC)<=ex.rh)x-=INC;  // don't drop past the top of the range
-  return{p,pi,w:x||'',r:Math.max(1,at(x)),dw:x-lw}}
+  // Moving up starts at the bottom of the range at the least: Epley undercounts high reps, so on light accessories
+  // a 5 lb jump (flyes 15 → 20) would otherwise read 20 × 4. Moving down never overshoots the top of the range.
+  const up=at(x)>ex.rh;if(up)while(at(x)>ex.rh)x+=INC;else while(at(x)<ex.rl&&x-INC>=(bw?0:INC)&&at(x-INC)<=ex.rh)x-=INC;
+  return{p,pi,w:x||'',r:Math.max(up?ex.rl:1,at(x)),dw:x-lw}}
 // Warm-ups for the big lifts, ramped up to set 1's weight (what you typed, else the target). Barbell loads round so
 // each side is whole 5s, with the plates per side on a 45 lb bar. Pull-ups and chin-ups warm up at bodyweight.
 const PL=[45,35,25,10,5,2.5],BB=/Barbell|Hang Clean/;
@@ -586,7 +588,7 @@ function rP(){
   h+=`</div><div class="pc"><div class="pct">How It Works</div><div style="padding:8px 20px 18px;font-size:14px;color:var(--tx2);line-height:1.65">`;
   h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">Progressive Overload</b> — Hit the top of the rep range → add weight next session.</p>`;
   h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">Your Week</b> — Tue–Thu at the work gym, 45–50 min, using only DBs, cables, the Smith, the pull-up/dip station, leg extension and leg curl. Legs are Wed and Sat, 3–4 days apart. Heavy barbell work is on the weekend at Crunch, about 65 min each day. Only one weekend day free? Do Full Body instead.</p><p style="margin-bottom:10px"><b style="color:var(--tx)">Effort</b> — Sets stay the same each week so sessions fit. Every set ends about 1 rep short of failure; W4 takes isolation to 0–1; W5 is recovery.</p>`;
-  h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">RIR</b> — Reps in Reserve: how many more you could have done. 1 on most sets, 0–1 on isolation in W4. STR lifts (squat, bench, deadlifts, cleans, weighted pull-ups) stay at 1–2: going to failure there costs the most recovery, especially on short sleep.</p>`;
+  h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">RIR</b> — Reps in Reserve: how many more clean reps you could have done. On accessories like lateral raises, flyes and face pulls, a rep that loses the squeeze doesn’t count, so stop there: that’s your 0–1. 1 on most sets, 0–1 on isolation in W4. STR lifts (squat, bench, deadlifts, cleans, weighted pull-ups) stay at 1–2: going to failure there costs the most recovery, especially on short sleep.</p>`;
   h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">Next Cycle</b> — In the DL week, tap Start cycle 2. Your history stays, and W1 shows your last W4 numbers. Swap exercises every 2–3 mesocycles.</p>`;
   h+=`<p><b style="color:var(--tx)">Logging</b> — The gray numbers in each set are your target, worked out from last time and this week’s RIR. Fill both boxes, or tap the circle to log the target as is. Targets move as you go: beat one (more reps, or more weight) and your next sets go up; come up short and they come down. Next week builds on what you actually logged. ↑ ADD 5 LB is the most a target went up from last time.</p><p style="margin-top:10px"><b style="color:var(--tx)">Rest Timer</b> — Starts when you log. It keeps time when your phone locks, beeps at zero and shows what’s next. Tap “Next” to jump there.</p><p style="margin-top:10px"><b style="color:var(--tx)">Swap</b> — Machine taken or no room? Tap ⇄ Swap on any lift and pick a stand-in. It lasts for this week only and keeps its own history.</p></div></div>`;
   const lb=+localStorage.getItem('rf5b')||0;
@@ -645,14 +647,17 @@ function psh(){if(!HK||!pulled)return;clearTimeout(pT);pT=setTimeout(()=>api('lo
   .then(()=>localStorage.setItem('rf5b',Date.now())).catch(()=>{pulled=false}),2000)}
 function svK(){const v=document.getElementById('kIn').value.trim();if(!v)return;HK=v;try{localStorage.setItem('rf5k',v)}catch{};pulled=false;
   document.getElementById('syncMsg').textContent='Connecting…';pull()}
-// body card: 7-day average weight and monthly gain rate against the 1–1.5 lb target, sleep, resting heart rate, steps
+// body card: last weigh-in and monthly gain rate against the 1–1.5 lb target, sleep, resting heart rate, steps.
+// Cole weighs in once a week (Tuesday, before food), so the rate is a straight-line fit through every weigh-in of the
+// last 8 weeks, not two single points 4 weeks apart: one weigh-in can swing 1–2 lb on water alone.
 function body(){const vals=(f,a,b)=>Object.entries(HL).filter(([d,x])=>d>ymd(b)&&d<=ymd(a)&&+x[f]>0).map(([,x])=>+x[f]),avg=a=>a.length?a.reduce((s,x)=>s+x)/a.length:null;
-  const w7=avg(vals('weight',0,7)),w28=avg(vals('weight',28,35)),rate=w7&&w28?(w7-w28)*30/28:null,sl=HL[ymd()]?.sleep,s7=avg(vals('sleep',0,7)),hr=avg(vals('rhr',0,7)),hrp=avg(vals('rhr',7,14)),st=avg(vals('steps',1,8));
-  const verdict=rate==null?(w7?'Four weeks of weigh-ins unlock your gain rate.':'Weigh in each morning. The 7-day average is the number that counts.')
+  const wd=Object.keys(HL).sort().filter(d=>d>ymd(56)&&+HL[d].weight>0),wp=wd.map(d=>[Date.parse(d+'T12:00')/864e5,+HL[d].weight]),mx=avg(wp.map(p=>p[0])),my=avg(wp.map(p=>p[1]));
+  const lw=wp.at(-1)?.[1],rate=wp.length>=4&&wp.at(-1)[0]-wp[0][0]>=21?wp.reduce((s,[x,y])=>s+(x-mx)*(y-my),0)/wp.reduce((s,[x])=>s+(x-mx)**2,0)*30:null,sl=HL[ymd()]?.sleep,s7=avg(vals('sleep',0,7)),hr=avg(vals('rhr',0,7)),hrp=avg(vals('rhr',7,14)),st=avg(vals('steps',1,8));
+  const verdict=rate==null?`Weigh in Tuesday mornings before food. ${4-Math.min(3,wp.length)} more weekly weigh-in${wp.length===3?'':'s'} unlock${wp.length===3?'s':''} your gain rate.`
     :rate<.5?'Gaining under 0.5 lb a month: add 100–150 kcal a day.':rate>2?'Gaining over 2 lb a month: cut 100–150 kcal a day.':'On track. The target is 1–1.5 lb a month.';
-  const ws=Object.keys(HL).sort().filter(d=>d>ymd(56)&&+HL[d].weight>0).map(d=>({v:+HL[d].weight,l:dtL(Date.parse(d+'T12:00'))}));
+  const ws=wd.map(d=>({v:+HL[d].weight,l:dtL(Date.parse(d+'T12:00'))}));
   return`<div class="gc"><div class="gct">Body · Garmin via Apple Health</div><div class="sg">
-    <div class="sgi"><div class="sgv">${w7?w7.toFixed(1):'–'}</div><div class="sgl">Weight, 7-day avg</div></div>
+    <div class="sgi"><div class="sgv">${lw?lw.toFixed(1):'–'}</div><div class="sgl">Weigh-in${wd.length?' · '+ws.at(-1).l:''}</div></div>
     <div class="sgi"><div class="sgv">${rate==null?'–':(rate>0?'+':'')+rate.toFixed(1)}</div><div class="sgl">lb per month</div></div>
     <div class="sgi"><div class="sgv">${sl??'–'}</div><div class="sgl">Sleep last night${s7?` · avg ${s7.toFixed(1)}`:''}</div></div>
     <div class="sgi"><div class="sgv">${hr?Math.round(hr):'–'}</div><div class="sgl">Resting HR${hr&&hrp?` · ${Math.round(hr-hrp)?`${hr>hrp?'+':''}${Math.round(hr-hrp)} vs`:'same as'} last week`:''}</div></div></div>
