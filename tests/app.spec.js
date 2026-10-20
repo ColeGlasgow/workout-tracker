@@ -80,9 +80,9 @@ test('typing alone never logs a set; tapping the circle logs the target', async 
   await reps.fill('');
   await r.locator('.sc').click();
   await expect(r).toHaveClass(/\bdn\b/);
-  await expect(lb).toHaveValue('65');  // last week 60×10 at the top of 6-10, so up a step
-  await expect(reps).toHaveValue('8');
-  expect((await saved(page))['1.push.Incline DB Press.0']).toMatchObject({ w: '65', r: '8', d: true });
+  await expect(lb).toHaveValue('65');  // last week's best 60×11 is past the top of 6-10, so up a step
+  await expect(reps).toHaveValue('9');
+  expect((await saved(page))['1.push.Incline DB Press.0']).toMatchObject({ w: '65', r: '9', d: true });
 });
 
 test('a filled-in row logs itself once you leave the box', async ({ page }) => {
@@ -101,34 +101,37 @@ test('a filled-in row logs itself once you leave the box', async ({ page }) => {
   expect((await saved(page))['0.push.Incline DB Press.0']).toMatchObject({ w: '60', r: '10', d: true });
 });
 
-// W1 (3-4 RIR) → W2 (2-3 RIR). Worked by hand: Epley max = lb × (1 + (reps + RIR left) / 30).
-test('targets come from last time and this week’s RIR', async ({ page }) => {
+// Cole trains at ~1 RIR every week (1.5 on STR lifts). Worked by hand: Epley max from last time's best set
+// = lb × (1 + (reps + 1 to beat it + RIR left) / 30), then the reps that leaves at this week's RIR.
+test('targets come from last time’s best set, one rep better', async ({ page }) => {
   const set = (lift, i, w, r) => [`0.${lift}.${i}`, { w, r, d: true }];
   await open(page, { store: { rf5w: '1', rf5: Object.fromEntries([
-    set('push.Incline DB Press', 0, '60', '10'),  // max 87 → 60 would be 11, past the top → 65 × 8
-    set('push.Incline DB Press', 1, '60', '8'),   // 60 would be 9, in range → keep 60, one more rep
-    set('push.Incline DB Press', 2, '60', '4'),   // 60 would be 5, under the bottom → 55 × 8
-    set('pull.Weighted Pull-Ups', 0, '25', '10'), // 197 lb bodyweight + 25 → +30 × 10
-    set('pull.Dips', 0, '', '12')]) } });          // bodyweight: one more rep
+    set('push.Incline DB Press', 0, '60', '10'),   // best: 60 would be 11, past the top → 65 × 8 on every set
+    set('push.Incline DB Press', 1, '60', '8'),
+    set('push.Incline DB Press', 2, '60', '135'),  // a weight typed into the reps box: ignored
+    set('push.Seated Cable Row', 0, '100', '9'),   // in range → same weight, one more rep
+    set('push.Cable Flyes (Low→High)', 0, '150', '6'),  // under the bottom of 10-15 → 140 × 10
+    set('pull.Weighted Pull-Ups', 0, '25', '10'),  // 197 lb bodyweight + 25 → +30 × 10
+    set('pull.Dips', 0, '', '12')]) } });           // bodyweight: one more rep
   const want = async (lift, i, lb, reps) => {
     const [w, r] = [0, 1].map(n => row(page, lift, i).locator('input').nth(n));
     await expect(w).toHaveAttribute('placeholder', lb);
     await expect(r).toHaveAttribute('placeholder', reps);
   };
   await day(page, DAY.tue);
-  await want('Incline DB Press', 0, '65', '8');
-  await want('Incline DB Press', 1, '60', '9');
-  await want('Incline DB Press', 2, '55', '8');
-  await want('Incline DB Press', 3, 'lbs', '6–10');  // nothing logged: no target
+  for (const i of [0, 1, 2, 3]) await want('Incline DB Press', i, '65', '8');
+  await expect(page.locator('#p_InclineDBPress_0')).toHaveText('prev 60 × 10 · target 65 × 8 (+5 lb)');
+  await expect(page.locator('#p_InclineDBPress_2')).toHaveText('target 65 × 8 (+5 lb)');
+  await want('Seated Cable Row', 0, '100', '10');
+  await want('Cable Flyes (Low→High)', 0, '140', '10');
   await want('Weighted Pull-Ups', 0, '30', '10');
-  await expect(page.locator('#e_InclineDBPress .spv').first()).toHaveText('prev 60 × 10 · target 65 × 8 (+5 lb)');
   await back(page);
   await day(page, DAY.thu);
   await want('Dips', 0, 'BW', '13');
 });
 
 test('targets follow the sets you just did', async ({ page }) => {
-  await open(page, { store: lastWeek });  // W1: 60 × 10, 10, 11, 10 → W2 targets 65 × 8, 8, 9, 8
+  await open(page, { store: lastWeek });  // W1 best 60 × 11 → W2 target 65 × 9 on every set
   await day(page, DAY.tue);
   const want = async (i, lb, reps) => {
     await expect(row(page, 'Incline DB Press', i).locator('input').nth(0)).toHaveAttribute('placeholder', lb);
@@ -138,7 +141,7 @@ test('targets follow the sets you just did', async ({ page }) => {
   await want(1, '70', '8');
   await expect(page.locator('#p_InclineDBPress_1')).toHaveText('prev 60 × 10 · target 70 × 8 (+10 lb)');
   await log(page, 'Incline DB Press', 1, 70, 4);  // too heavy: 4 reps
-  await want(2, '65', '8');
+  await want(2, '65', '7');
 });
 
 test('warm-ups ramp up to set 1 with the plates for each side', async ({ page }) => {
@@ -154,6 +157,20 @@ test('warm-ups ramp up to set 1 with the plates for each side', async ({ page })
   await day(page, DAY.tue);
   await expect(page.locator('#w_InclineDBPress .wuc b')).toHaveText(['35 × 8', '50 × 4', '65']);  // from the 65 target
   await expect(page.locator('#w_WeightedPullUps .wuc b')).toHaveText(['BW × 5']);
+});
+
+test('a new week starts on its own once the last one has sets', async ({ page, context }) => {
+  const one = (w, d) => ({ [`${w}.push.Incline DB Press.0`]: { w: '60', r: '10', d: true, t: at(d) } });
+  await open(page, { store: { rf5w: '0', rf5: one(0, '2026-10-11') } });  // Sunday, before this Tuesday
+  await expect(page.locator('.si.on')).toHaveText('W2');
+  await expect(page.locator('#toast')).toHaveText('Week 2 started');
+  const same = await context.newPage();
+  await open(same, { store: { rf5w: '0', rf5: one(0, '2026-10-13') } });  // this Tuesday: still this week
+  await expect(same.locator('.si.on')).toHaveText('W1');
+  const dl = await context.newPage();
+  await open(dl, { store: { rf5w: '4', rf5: one(4, '2026-10-11') } });  // deload done → next cycle
+  await expect(dl.locator('.si.on')).toHaveText('W1');
+  await expect(dl.locator('#v_home .hd-s')).toHaveText("Cole's Training · Cycle 2");
 });
 
 test('the add-weight cue shows only when a target goes up', async ({ page }) => {

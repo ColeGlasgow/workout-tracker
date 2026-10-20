@@ -281,10 +281,15 @@ input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appear
 <script>
 const A={nm:'Cole',ht:"6'2\"",wt:197,bf:8,lbm:180.3};
 const VOL={Chest:{e:10,a:16,m:22},Back:{e:10,a:18,m:25},'Side Delts':{e:8,a:19,m:26},'Rear Delts':{e:8,a:19,m:26},'Front Delts':{e:0,a:7,m:12},Biceps:{e:8,a:17,m:26},Triceps:{e:6,a:12,m:18},Quads:{e:8,a:15,m:20},Hamstrings:{e:6,a:13,m:20},Glutes:{e:0,a:8,m:16},Calves:{e:8,a:14,m:20},Abs:{e:0,a:18,m:25}};
-const WK=[{w:1,l:'Accumulation 1',r:'3–4 RIR',vm:0,dl:0},{w:2,l:'Accumulation 2',r:'2–3 RIR',vm:0,dl:0},{w:3,l:'Accumulation 3',r:'1–2 RIR',vm:0,dl:0},{w:4,l:'Overreach',r:'0–1 RIR',vm:0,dl:0},{w:5,l:'Deload',r:'4+ RIR',vm:-3,dl:1}];
+const WK=[{w:1,l:'Accumulation 1',r:'1 RIR',vm:0,dl:0},{w:2,l:'Accumulation 2',r:'1 RIR',vm:0,dl:0},{w:3,l:'Accumulation 3',r:'1 RIR',vm:0,dl:0},{w:4,l:'Overreach',r:'0–1 RIR',vm:0,dl:0},{w:5,l:'Deload',r:'4+ RIR',vm:-3,dl:1}];
 let cw=0,cdy=null;
 try{cw=Math.min(4,+localStorage.getItem('rf5w')||0)}catch{}
 const svW=()=>{try{localStorage.setItem('rf5w',cw);localStorage.setItem('rf5c',cyc)}catch{}};
+// New week: when the newest set logged in the app's week is from before this Tuesday, move on one week (after the
+// deload, to the next cycle). A week with nothing logged never moves, so time off doesn't skip weeks.
+const tw=t=>Math.floor((Math.floor((t-new Date(t).getTimezoneOffset()*6e4)/864e5)+2)/7);  // weeks start Tuesday
+function nW(){const st=gs(),pre=AW()+'.';let last=0;for(const k in st)if(k.startsWith(pre)&&st[k]?.d)last=Math.max(last,+st[k].t||0);
+  if(!last||tw(last)>=tw(Date.now()))return;if(cw===4){cyc++;cw=0}else cw++;svW();rH();toast(`${WK[cw].dl?'Deload':'Week '+(cw+1)} started`)}
 
 // Legs Wed + Sat (3-4 days apart), upper Tue/Thu/Sun, heavy barbell work on weekends at Crunch.
 // alt = swaps that work in the same gym. o = the day a lift's saved sets live under (keeps history, and
@@ -325,14 +330,14 @@ const PG=[
     {nm:'Cable Lateral Raise',tg:'h',s:3,rl:12,rh:20,rs:45,nt:'One arm at a time, cable at hand height. Go straight from left to right.',m:['Side Delts'],ss:'D',o:'push',alt:['Machine Lateral Raise','Lateral Raises']}]}
 ]},
 {id:'full',n:'Sun',dw:0,t:'Heavy Upper',g:'Crunch',min:65,f:'Bench · Chins · Rows · Delts · Arms',cl:'#f87171',sc:[
-  {n:'Strength',ex:[{nm:'Barbell Bench Press',tg:'s',s:3,rl:4,rh:6,rs:120,nt:'Shoulder blades pinched, feet planted, touch mid-chest. Safeties or a spotter.',m:['Chest','Triceps','Front Delts'],ss:'A',o:'push',alt:['DB Bench Press','Smith Bench Press']},
-    {nm:'Weighted Chin-Ups',tg:'s',s:3,rl:5,rh:8,rs:120,nt:'Palms facing you. Belt or a DB between your feet.',m:['Back','Biceps'],ss:'A',alt:['Underhand Lat Pulldown']}]},
-  {n:'Hypertrophy',ex:[{nm:'Incline Machine Press',tg:'h',s:3,rl:8,rh:12,rs:75,nt:'Or Smith incline at about 30°. Miss overhead press? Swap it in here.',m:['Chest','Front Delts','Triceps'],ss:'B',alt:['Standing OHP','Incline DB Press']},
-    {nm:'Chest-Supported Row',tg:'h',s:3,rl:8,rh:12,rs:75,nt:'T-bar or machine with a chest pad. Spares your lower back the day after deadlifts.',m:['Back','Biceps','Rear Delts'],ss:'B',o:'upper',alt:['Seated Cable Row','One-Arm DB Row']},
-    {nm:'Machine Lateral Raise',tg:'h',s:3,rl:12,rh:20,rs:45,nt:'Slow down, 1s pause at the top.',m:['Side Delts'],ss:'C',alt:['Cable Lateral Raise','Lateral Raises']},
-    {nm:'Reverse Pec Deck',tg:'h',s:3,rl:12,rh:20,rs:45,nt:'2s hold at peak.',m:['Rear Delts'],ss:'C',o:'upper',alt:['Face Pulls','Cable Reverse Fly']}]},
-  {n:'Arms',ex:[{nm:'EZ-Bar Curl',tg:'h',s:2,rl:8,rh:12,rs:60,nt:'Strict. Elbows pinned.',m:['Biceps'],ss:'D',o:'upper',alt:['Preacher Curl','Cable Curl']},
-    {nm:'EZ Skull Crusher',tg:'h',s:2,rl:8,rh:12,rs:60,nt:'Lower the bar just behind your head for the stretch.',m:['Triceps'],ss:'D',alt:['Triceps Pushdown','DB Skull Crusher']}]}
+  {n:'Strength',ex:[{nm:'Barbell Bench Press',tg:'s',s:3,rl:4,rh:6,rs:180,nt:'Shoulder blades pinched, feet planted, touch mid-chest. Safeties or a spotter.',m:['Chest','Triceps','Front Delts'],o:'push',alt:['DB Bench Press','Smith Bench Press']},
+    {nm:'Weighted Chin-Ups',tg:'s',s:3,rl:5,rh:8,rs:150,nt:'Palms facing you. Belt or a DB between your feet.',m:['Back','Biceps'],alt:['Underhand Lat Pulldown']}]},
+  {n:'Hypertrophy',ex:[{nm:'Incline Machine Press',tg:'h',s:3,rl:8,rh:12,rs:90,nt:'Or Smith incline at about 30°. Miss overhead press? Swap it in here.',m:['Chest','Front Delts','Triceps'],alt:['Standing OHP','Incline DB Press']},
+    {nm:'Chest-Supported Row',tg:'h',s:3,rl:8,rh:12,rs:90,nt:'T-bar or machine with a chest pad. Spares your lower back the day after deadlifts.',m:['Back','Biceps','Rear Delts'],o:'upper',alt:['Seated Cable Row','One-Arm DB Row']},
+    {nm:'Machine Lateral Raise',tg:'h',s:3,rl:12,rh:20,rs:45,nt:'Slow down, 1s pause at the top.',m:['Side Delts'],ss:'A',alt:['Cable Lateral Raise','Lateral Raises']},
+    {nm:'Reverse Pec Deck',tg:'h',s:3,rl:12,rh:20,rs:45,nt:'2s hold at peak.',m:['Rear Delts'],ss:'A',o:'upper',alt:['Face Pulls','Cable Reverse Fly']}]},
+  {n:'Arms',ex:[{nm:'EZ-Bar Curl',tg:'h',s:2,rl:8,rh:12,rs:60,nt:'Strict. Elbows pinned.',m:['Biceps'],ss:'B',o:'upper',alt:['Preacher Curl','Cable Curl']},
+    {nm:'EZ Skull Crusher',tg:'h',s:2,rl:8,rh:12,rs:60,nt:'Lower the bar just behind your head for the stretch.',m:['Triceps'],ss:'B',alt:['Triceps Pushdown','DB Skull Crusher']}]}
 ]},
 {id:'fb',n:'Sat or Sun',dw:[6,0],t:'Full Body · one-day weekend',g:'Crunch',min:65,f:'Do this instead when you only get one weekend day',cl:'#fb923c',alt:1,sc:[
   {n:'Strength',ex:[{nm:'Barbell Back Squat',tg:'s',s:3,rl:4,rh:6,rs:180,nt:'Heavy. Brace hard, below parallel. Never grind a rep.',m:['Quads','Glutes'],o:'legs',alt:['Hack Squat','Leg Press']},
@@ -361,26 +366,31 @@ const _s=s=>{try{localStorage.setItem(LS,JSON.stringify(s))}catch{};psh()};
 const sk=(w,d,e,i)=>`${w}.${KD[d+'|'+e]||d}.${e}.${i}`;
 const gd=(w,d,e,i)=>gs()[sk(w,d,e,i)]||{w:'',r:'',d:false};
 const sd=(w,d,e,i,v)=>{const s=gs();s[sk(w,d,e,i)]=v;_s(s)};
-// Next target for set i. Last time's set (newest of the past 4 weeks, deloads skipped) is scored with Epley,
-// counting the reps left in the tank at that week's RIR. Keep the weight while the predicted reps at this week's
-// RIR stay in range; past the top, add 5 lb until back in range; below the bottom, take 5 lb off.
-// Within a session, your newest logged set rescales the rest: beat its target (more reps, or more weight) and
-// the next sets go up; come up short and they come down. Next week builds on what you actually logged.
+// Next target for set i. Base: your best set of the lift last time (newest of the past 4 weeks with any logged
+// sets, deloads skipped, rep typos over RMAX ignored), scored with Epley counting the reps left in the tank at that
+// week's RIR, plus one rep: the aim is to beat it. Past the top of the range, add 5 lb until back in range (double
+// progression); below the bottom, take 5 lb off. Every set gets that target until you log one: then your newest
+// set today sets the rest (beat it and they go up, come up short and they come down).
 // Pull-up/chin-up weight is added load, so bodyweight counts.
-const RQ=(w,ex)=>w%5===3&&ex.tg!=='h'?1.5:[3.5,2.5,1.5,.5,4][w%5];  // W1..W4, DL. Big lifts stay at 1-2 in W4
+const RQ=(w,ex)=>w%5===4?4:ex.tg!=='h'?1.5:w%5===3?.5:1;  // Cole trains at ~1 RIR: STR/PWR lifts 1-2 every week, the rest 1 (0-1 in W4), deload 4+
 const INC=5;  // ponytail: one step for every lift; per-lift steps if a cable stack jumps 10
+const RMAX=50;  // more reps than this is a typo (a weight typed into the reps box)
 const BW=()=>{const d=Object.keys(HL).sort().reverse().find(k=>+HL[k].weight>0);return d?+HL[d].weight:A.wt};
-function tgt(d,ex,i,live=1){const st=gs(),w=AW();let p,pw;
-  for(pw=w-1;pw>=Math.max(0,w-5);pw--){if(pw%5===4)continue;const v=st[sk(pw,d,ex.nm,i)];if(v?.d&&+v.r>0){p=v;break}}
+const okS=v=>v?.d&&+v.r>0&&+v.r<=RMAX;
+function best(st,w,d,nm,bw){const sc=v=>((+v.w||0)+bw+1)*(1+ +v.r/30);
+  for(let pw=w-1;pw>=Math.max(0,w-5);pw--){if(pw%5===4)continue;let p;
+    for(let j=0;j<9;j++){const v=st[sk(pw,d,nm,j)];if(okS(v)&&(!p||sc(v)>sc(p)))p=v}
+    if(p)return[p,pw]}return[]}
+function tgt(d,ex,i,live=1){const st=gs(),w=AW(),bw=/Pull-Up|Chin-Up/.test(ex.nm)?BW():0,[p,pw]=best(st,w,d,ex.nm,bw);
   if(!p)return null;
-  const qn=RQ(w,ex),qp=RQ(pw,ex),r=+p.r,lw=+p.w||0,bw=/Pull-Up|Chin-Up/.test(ex.nm)?BW():0;
-  if(!lw&&!bw)return{p,w:'',r:Math.max(1,Math.min(ex.rh,Math.round(r+qp-qn)))};
-  const e0=(lw+bw)*(1+(r+qp)/30);let e=e0,x=lw;
+  const pi=st[sk(pw,d,ex.nm,i)],qn=RQ(w,ex),qp=RQ(pw,ex),r=+p.r,lw=+p.w||0;
+  if(!lw&&!bw)return{p,pi,w:'',r:Math.max(1,Math.min(ex.rh,Math.round(r+1+qp-qn)))};
+  let e=(lw+bw)*(1+(r+1+qp)/30),x=lw;
   if(live)for(let j=i-1;j>=0;j--){const c=st[sk(w,d,ex.nm,j)];if(!c?.d)continue;
-    const b=tgt(d,ex,j,0);if(b?.e&&(+c.w>0||bw)){e*=(+c.w+bw)*(1+(+c.r+qn)/30)/b.e;x=+c.w||0}break}
+    if(okS(c)&&(+c.w>0||bw)){e=(+c.w+bw)*(1+(+c.r+qn)/30);x=+c.w||0}break}
   const at=x=>Math.round(30*(e/(x+bw)-1)-qn);
-  if(at(x)>ex.rh)while(at(x)>ex.rh)x+=INC;else while(at(x)<ex.rl&&x-INC>=(bw?0:INC))x-=INC;
-  return{p,e:e0,w:x||'',r:Math.max(1,at(x)),dw:x-lw}}
+  if(at(x)>ex.rh)while(at(x)>ex.rh)x+=INC;else while(at(x)<ex.rl&&x-INC>=(bw?0:INC)&&at(x-INC)<=ex.rh)x-=INC;  // don't drop past the top of the range
+  return{p,pi,w:x||'',r:Math.max(1,at(x)),dw:x-lw}}
 // Warm-ups for the big lifts, ramped up to set 1's weight (what you typed, else the target). Barbell loads round so
 // each side is whole 5s, with the plates per side on a 45 lb bar. Pull-ups and chin-ups warm up at bodyweight.
 const PL=[45,35,25,10,5,2.5],BB=/Barbell|Hang Clean/;
@@ -393,7 +403,7 @@ function wuH(ex,W){W=+W||0;const bb=BB.test(ex.nm),bw=/Pull-Up|Chin-Up/.test(ex.
   return`<div class="wul">Warm-up${bb||/Trap Bar/.test(ex.nm)?' · bar × 10 first':''}${bb?' · plates a side':''}</div>`+st.map(([x,r])=>`<div class="wuc"><b>${bw&&x!=='BW'?'+'+x:x} × ${r}</b>${bb?`<i>${side(x)}</i>`:''}</div>`).join('')
     +(W?`<div class="wuc wk"><b>${bw?'+'+W:W}</b><i>${bb?side(W):'work sets'}</i></div>`:'')}
 const tW=t=>t?t.w||'BW':'lbs',tR=(t,ex)=>t?t.r:ex.rl+'–'+ex.rh;
-const tL=t=>t?`prev ${t.p.w||'BW'} × ${t.p.r} · target ${t.w||'BW'} × ${t.r}${t.dw?` (${t.dw>0?'+':'−'}${Math.abs(t.dw)} lb)`:''}`:'';
+const tL=t=>t?`${okS(t.pi)?`prev ${t.pi.w||'BW'} × ${t.pi.r} · `:''}target ${t.w||'BW'} × ${t.r}${t.dw?` (${t.dw>0?'+':'−'}${Math.abs(t.dw)} lb)`:''}`:'';
 // After a set is logged or cleared, refresh the targets on that lift's open sets in place (keeps focus and scroll)
 const EX={};
 function rT(d,tid,ns){const ex=EX[tid];for(let k=0;k<ns;k++){const row=document.getElementById(`r_${tid}_${k}`);if(!row||row.classList.contains('dn'))continue;
@@ -428,7 +438,7 @@ const rng=(sz,sw,pct,clr)=>{const r=(sz-sw)/2,c=2*Math.PI*r,o=c*(1-Math.min(100,
 function rH(){
   document.getElementById('wSeg').innerHTML=WK.map((w,i)=>`<div class="si ${i===cw?'on':''}" onclick="cw=${i};svW();rH()">${w.dl?'DL':'W'+w.w}</div>`).join('');
   const wk=WK[cw];
-  document.getElementById('bnr').innerHTML=`<div class="bn ${wk.dl?'dl':'nm'}"><div class="bn-d" style="background:${wk.dl?'var(--gn)':'var(--ac)'}"></div><div class="bn-t"><b>${wk.l}</b> — ${wk.dl?'Cut volume & load. Recovery week.':wk.w===4?'Isolation to 0–1. Big lifts stay at 1–2.':'Push harder than last week.'}</div><div class="bn-r">${wk.r}</div></div>${wk.dl?`<button class="nc" onclick="cyc++;cw=0;svW();rH()">Done with the deload? Start cycle ${cyc+2} →</button>`:''}`;
+  document.getElementById('bnr').innerHTML=`<div class="bn ${wk.dl?'dl':'nm'}"><div class="bn-d" style="background:${wk.dl?'var(--gn)':'var(--ac)'}"></div><div class="bn-t"><b>${wk.l}</b> — ${wk.dl?'Cut volume & load. Recovery week.':wk.w===4?'Isolation to 0–1. STR lifts stay at 1–2.':'Stop with 1 rep left, 1–2 on STR lifts. Beat last week’s targets.'}</div><div class="bn-r">${wk.r}</div></div>${wk.dl?`<button class="nc" onclick="cyc++;cw=0;svW();rH()">Done with the deload? Start cycle ${cyc+2} →</button>`:''}`;
   document.querySelector('#v_home .hd-s').textContent=`Cole's Training · Cycle ${cyc+1}`;
   
   const td=new Date().getDay(),isT=d=>[].concat(d.dw).includes(td);
@@ -517,7 +527,7 @@ function nxt(did,cn,ci){
 const jmp=()=>{if(tN)document.getElementById(`r_${tN[0].nm.replace(/\W/g,'')}_${tN[1]}`)?.scrollIntoView({behavior:'smooth',block:'center'})};
 // keep the screen on mid-workout so the timer stays visible
 let WL;const wake=async()=>{try{if(!WL||WL.released)WL=await navigator.wakeLock.request('screen')}catch{}};
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){pull();if(WL)wake()}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){nW();pull();if(WL)wake()}});
 
 function chkEx(d,e,tid,ns){
   let ad=true;for(let j=0;j<ns;j++)if(!gd(AW(),d,e,j).d){ad=false;break}
@@ -572,11 +582,11 @@ function rP(){
   let h=`<div class="pc"><div class="pct">Athlete</div>`;
   [{l:'Name',v:A.nm},{l:'Height',v:A.ht},{l:'Weight',v:A.wt+' lbs'},{l:'Body Fat',v:'~'+A.bf+'%'},{l:'Lean Mass',v:A.lbm+' lbs'},{l:'Background',v:'D1 Basketball'},{l:'Goal',v:'Athletic Aesthetic'},{l:'Reference',v:'Brian Pruett'}].forEach(r=>h+=`<div class="pr"><div class="prl">${r.l}</div><div class="prv">${r.v}</div></div>`);
   h+=`</div><div class="pc"><div class="pct">Program</div>`;
-  [{l:'Split',v:'Upper / Legs / Delts-Arms · Heavy Legs / Heavy Upper'},{l:'Schedule',v:'Tue–Thu work gym · Sat–Sun Crunch'},{l:'One-day weekend',v:'Full Body (~65 min)'},{l:'Frequency',v:'5 days/week'},{l:'Muscle Freq',v:'Legs 2× · Upper 3×'},{l:'Mesocycle',v:'5 weeks (4 + deload)'},{l:'Progression',v:'Double Progression + RIR'},{l:'Periodization',v:'Block + RIR Ramp'}].forEach(r=>h+=`<div class="pr"><div class="prl">${r.l}</div><div class="prv">${r.v}</div></div>`);
+  [{l:'Split',v:'Upper / Legs / Delts-Arms · Heavy Legs / Heavy Upper'},{l:'Schedule',v:'Tue–Thu work gym · Sat–Sun Crunch'},{l:'One-day weekend',v:'Full Body (~65 min)'},{l:'Frequency',v:'5 days/week'},{l:'Muscle Freq',v:'Legs 2× · Upper 3×'},{l:'Mesocycle',v:'5 weeks (4 + deload)'},{l:'Progression',v:'Double Progression + RIR'},{l:'Periodization',v:'4 weeks at 1 RIR + deload'}].forEach(r=>h+=`<div class="pr"><div class="prl">${r.l}</div><div class="prv">${r.v}</div></div>`);
   h+=`</div><div class="pc"><div class="pct">How It Works</div><div style="padding:8px 20px 18px;font-size:14px;color:var(--tx2);line-height:1.65">`;
   h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">Progressive Overload</b> — Hit the top of the rep range → add weight next session.</p>`;
-  h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">Your Week</b> — Tue–Thu at the work gym, 45–50 min, using only DBs, cables, the Smith, the pull-up/dip station, leg extension and leg curl. Legs are Wed and Sat, 3–4 days apart. Heavy barbell work is on the weekend at Crunch, about 65 min each day. Only one weekend day free? Do Full Body instead.</p><p style="margin-bottom:10px"><b style="color:var(--tx)">Effort Ramp</b> — Sets stay the same each week so sessions fit. Effort climbs instead: W1 3–4 RIR → W4 0–1 RIR → W5 recovery.</p>`;
-  h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">RIR</b> — Reps in Reserve. 3–4 in W1, down to 0–1 by W4 on isolation lifts. Big lifts stay at 1–2.</p>`;
+  h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">Your Week</b> — Tue–Thu at the work gym, 45–50 min, using only DBs, cables, the Smith, the pull-up/dip station, leg extension and leg curl. Legs are Wed and Sat, 3–4 days apart. Heavy barbell work is on the weekend at Crunch, about 65 min each day. Only one weekend day free? Do Full Body instead.</p><p style="margin-bottom:10px"><b style="color:var(--tx)">Effort</b> — Sets stay the same each week so sessions fit. Every set ends about 1 rep short of failure; W4 takes isolation to 0–1; W5 is recovery.</p>`;
+  h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">RIR</b> — Reps in Reserve: how many more you could have done. 1 on most sets, 0–1 on isolation in W4. STR lifts (squat, bench, deadlifts, cleans, weighted pull-ups) stay at 1–2: going to failure there costs the most recovery, especially on short sleep.</p>`;
   h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">Next Cycle</b> — In the DL week, tap Start cycle 2. Your history stays, and W1 shows your last W4 numbers. Swap exercises every 2–3 mesocycles.</p>`;
   h+=`<p><b style="color:var(--tx)">Logging</b> — The gray numbers in each set are your target, worked out from last time and this week’s RIR. Fill both boxes, or tap the circle to log the target as is. Targets move as you go: beat one (more reps, or more weight) and your next sets go up; come up short and they come down. Next week builds on what you actually logged. ↑ ADD 5 LB is the most a target went up from last time.</p><p style="margin-top:10px"><b style="color:var(--tx)">Rest Timer</b> — Starts when you log. It keeps time when your phone locks, beeps at zero and shows what’s next. Tap “Next” to jump there.</p><p style="margin-top:10px"><b style="color:var(--tx)">Swap</b> — Machine taken or no room? Tap ⇄ Swap on any lift and pick a stand-in. It lasts for this week only and keeps its own history.</p></div></div>`;
   const lb=+localStorage.getItem('rf5b')||0;
@@ -599,7 +609,7 @@ async function bkR(inp){const f=inp.files[0];if(!f)return;try{const n=mrg(JSON.p
 
 // ---------- progress: each finished session of a lift, scored by its best set (Epley estimated max; bodyweight lifts use reps)
 function hist(day,nm){const st=gs(),by={};
-  for(const k in st){const v=st[k],m=k.match(/^(\d+)\.([a-z0-9]+)\.(.+)\.(\d+)$/);if(!v?.d||!m||m[2]!==day||m[3]!==nm)continue;(by[m[1]]||=[]).push({...v,i:+m[4]})}
+  for(const k in st){const v=st[k],m=k.match(/^(\d+)\.([a-z0-9]+)\.(.+)\.(\d+)$/);if(!okS(v)||!m||m[2]!==day||m[3]!==nm)continue;(by[m[1]]||=[]).push({...v,i:+m[4]})}
   const ss=Object.keys(by).map(Number).sort((a,b)=>a-b).map(w=>({w,s:by[w].sort((a,b)=>a.i-b.i),t:Math.max(0,...by[w].map(v=>+v.t||0))}));
   const wtd=ss.some(x=>x.s.some(v=>+v.w>0));
   ss.forEach(x=>x.dl=x.w%5===4);
@@ -652,7 +662,7 @@ function body(){const vals=(f,a,b)=>Object.entries(HL).filter(([d,x])=>d>ymd(b)&
 function lgW(){const v=Math.round(document.getElementById('wIn').value*10)/10;if(!(v>=50&&v<=600))return;
   HL[ymd()]={...HL[ymd()],weight:v};svH();if(HK)api('health',{method:'POST',body:JSON.stringify({date:ymd(),weight:v})}).catch(()=>{});rD()}
 
-rH();
+nW();rH();
 pull();
 navigator.serviceWorker?.register('sw.js').catch(()=>{});
 </script>
