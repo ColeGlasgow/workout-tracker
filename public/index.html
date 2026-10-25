@@ -301,7 +301,7 @@ const PG=[
   {n:'Hypertrophy',ex:[{nm:'Seated Cable Row',tg:'h',s:3,rl:8,rh:12,rs:75,nt:'Neutral grip. Let the shoulder blades travel forward, then pull to your lower ribs.',m:['Back','Biceps','Rear Delts'],ss:'B',alt:['One-Arm DB Row','Bent-Over DB Row']},
     {nm:'Cable Flyes (Low→High)',tg:'h',s:3,rl:10,rh:15,rs:75,nt:'Cables low, sweep up to chin height. Squeeze pecs at top.',m:['Chest'],ss:'B',alt:['Incline DB Fly','Deficit Push-Ups']},
     {nm:'Lateral Raises',tg:'h',s:4,rl:12,rh:20,rs:45,nt:'Lead with elbows. 1s pause at top. Last set to failure.',m:['Side Delts'],ss:'C',alt:['Cable Lateral Raise','Lean-Away DB Lateral Raise']},
-    {nm:'Bent-Over Rear Delt Fly',tg:'h',s:3,rl:12,rh:20,rs:45,nt:'DBs, chest over your knees, slight bend in the elbows. Sweep wide, no shrugging.',m:['Rear Delts'],ss:'C',alt:['Cable Reverse Fly','Face Pulls']}]}
+    {nm:'Face Pulls',tg:'h',s:3,rl:12,rh:20,rs:45,nt:'Rope to your forehead, rotate out. Hold 2s.',m:['Rear Delts'],ss:'C',alt:['Cable Reverse Fly','Bent-Over Rear Delt Fly']}]}
 ]},
 {id:'legs',n:'Wed',dw:3,t:'Legs',g:'Work gym',min:50,f:'Quads · Hamstrings · Calves · Abs',cl:'#34d399',sc:[
   {n:'Strength',ex:[{nm:'Smith Squat',tg:'s',s:3,rl:8,rh:12,rs:150,nt:'The bar moves with you, so set up like a barbell squat: bar over mid-foot, feet shoulder-width. Hips below parallel. Never grind on a short night.',m:['Quads','Glutes'],alt:['Bulgarian Split Squat','DB Goblet Squat']}]},
@@ -313,7 +313,7 @@ const PG=[
 ]},
 {id:'pull',n:'Thu',dw:4,t:'Shoulders, Arms + Lats',g:'Work gym',min:50,f:'Lats · Delts · Arms',cl:'#a78bfa',sc:[
   {n:'Downstairs · Chest + Delts',ex:[{nm:'Dips',tg:'h',s:3,rl:8,rh:15,rs:75,nt:'Bodyweight. Lean slightly forward, elbows to about 90°. All sets at 15? Take 3 seconds on the way down.',m:['Triceps','Chest','Front Delts'],ss:'A',alt:['Close-Grip Smith Press','Deficit Push-Ups']},
-    {nm:'Lateral Raises',tg:'h',s:4,rl:12,rh:20,rs:45,nt:'Light and strict. Last set: drop the weight and keep going.',m:['Side Delts'],ss:'A',alt:['Cable Lateral Raise','Lean-Away DB Lateral Raise']}]},
+    {nm:'Cable Lateral Raise',tg:'h',s:4,rl:12,rh:20,rs:45,nt:'One arm at a time, cable at hand height. Last set: drop the weight and keep going.',m:['Side Delts'],ss:'A',alt:['Lateral Raises','Lean-Away DB Lateral Raise']}]},
   {n:'Upstairs · Lats + Rear Delts',ex:[{nm:'Wide Lat Pulldown',tg:'h',s:4,rl:8,rh:12,rs:75,nt:'Full stretch at the top, pull to your chest. The 4th set is on its own.',m:['Back','Biceps'],ss:'B',o:'upper',alt:['Bodyweight Pull-Ups','Close-Grip Pulldown']},
     {nm:'Face Pulls',tg:'h',s:3,rl:12,rh:20,rs:45,nt:'Rope to your forehead, rotate out. Hold 2s.',m:['Rear Delts'],ss:'B',alt:['Bent-Over Rear Delt Fly','Cable Reverse Fly']}]},
   {n:'Upstairs · Arms',ex:[{nm:'Incline DB Curl',tg:'h',s:3,rl:8,rh:12,rs:60,nt:'45° bench, arms hang behind you. 3s down.',m:['Biceps'],ss:'C',alt:['Cable Curl','DB Curl']},
@@ -327,17 +327,17 @@ const PG=[
   {n:'Hypertrophy',ex:[{nm:'Seated Leg Curl',tg:'h',s:3,rl:8,rh:12,rs:60,nt:'Lean forward a little for more stretch. Pause with the pad fully curled.',m:['Hamstrings'],ss:'C',alt:['Lying Leg Curl']},
     {nm:'Reclined Leg Extension',tg:'h',s:3,rl:10,rh:15,rs:60,nt:'Seat reclined back. Pause at the top. Last set to failure.',m:['Quads'],ss:'C',alt:['Leg Extension','Leg Press']},
     {nm:'Standing Calf Raises',tg:'h',s:3,rl:8,rh:15,rs:45,nt:'Calf machine. Full stretch at the bottom, no bouncing.',m:['Calves'],ss:'D',alt:['Leg Press Calf Raise','Smith Calf Raise']},
-    {nm:'Cable Lateral Raise',tg:'h',s:3,rl:12,rh:20,rs:45,nt:'One arm at a time, cable at hand height. Go straight from left to right.',m:['Side Delts'],ss:'D',o:'push',alt:['Machine Lateral Raise','Lateral Raises']}]}
+    {nm:'Lateral Raises',tg:'h',s:3,rl:12,rh:20,rs:45,nt:'Lead with elbows. 1s pause at top. Last set to failure.',m:['Side Delts'],ss:'D',alt:['Cable Lateral Raise','Machine Lateral Raise']}]}
 ]},
 {id:'full',n:'Sun',dw:0,t:'Heavy Upper',g:'Crunch',min:65,f:'Bench · Chins · Rows · Delts · Arms',cl:'#f87171',sc:[
   {n:'Strength',ex:[{nm:'Barbell Bench Press',tg:'s',s:3,rl:4,rh:6,rs:180,nt:'Shoulder blades pinched, feet planted, touch mid-chest. Safeties or a spotter.',m:['Chest','Triceps','Front Delts'],o:'push',alt:['DB Bench Press','Smith Bench Press']},
     {nm:'Weighted Chin-Ups',tg:'s',s:3,rl:5,rh:8,rs:150,nt:'Palms facing you. Belt or a DB between your feet.',m:['Back','Biceps'],alt:['Underhand Lat Pulldown']}]},
   {n:'Hypertrophy',ex:[{nm:'Incline Machine Press',tg:'h',s:3,rl:8,rh:12,rs:90,nt:'Or Smith incline at about 30°. Miss overhead press? Swap it in here.',m:['Chest','Front Delts','Triceps'],alt:['Standing OHP','Incline DB Press']},
     {nm:'Chest-Supported Row',tg:'h',s:3,rl:8,rh:12,rs:90,nt:'T-bar or machine with a chest pad. Spares your lower back the day after deadlifts.',m:['Back','Biceps','Rear Delts'],o:'upper',alt:['Seated Cable Row','One-Arm DB Row']},
-    {nm:'Machine Lateral Raise',tg:'h',s:3,rl:12,rh:20,rs:45,nt:'Slow down, 1s pause at the top.',m:['Side Delts'],ss:'A',alt:['Cable Lateral Raise','Lateral Raises']},
+    {nm:'Lateral Raises',tg:'h',s:3,rl:12,rh:20,rs:45,nt:'Lead with elbows, 1s pause at the top.',m:['Side Delts'],ss:'A',alt:['Machine Lateral Raise','Cable Lateral Raise']},
     {nm:'Reverse Pec Deck',tg:'h',s:3,rl:12,rh:20,rs:45,nt:'2s hold at peak.',m:['Rear Delts'],ss:'A',o:'upper',alt:['Face Pulls','Cable Reverse Fly']}]},
-  {n:'Arms',ex:[{nm:'EZ-Bar Curl',tg:'h',s:2,rl:8,rh:12,rs:60,nt:'Strict. Elbows pinned.',m:['Biceps'],ss:'B',o:'upper',alt:['Preacher Curl','Cable Curl']},
-    {nm:'EZ Skull Crusher',tg:'h',s:2,rl:8,rh:12,rs:60,nt:'Lower the bar just behind your head for the stretch.',m:['Triceps'],ss:'B',alt:['Triceps Pushdown','DB Skull Crusher']}]}
+  {n:'Arms',ex:[{nm:'Cable Curl',tg:'h',s:2,rl:8,rh:12,rs:60,nt:'Strict. Elbows pinned, squeeze at the top.',m:['Biceps'],ss:'B',alt:['EZ-Bar Curl','Preacher Curl']},
+    {nm:'Triceps Pushdown',tg:'h',s:2,rl:8,rh:12,rs:60,nt:'Bar or rope. Elbows pinned to your sides, full lockout.',m:['Triceps'],ss:'B',alt:['EZ Skull Crusher','DB Skull Crusher']}]}
 ]},
 {id:'fb',n:'Sat or Sun',dw:[6,0],t:'Full Body · one-day weekend',g:'Crunch',min:65,f:'Do this instead when you only get one weekend day',cl:'#fb923c',alt:1,sc:[
   {n:'Strength',ex:[{nm:'Barbell Back Squat',tg:'s',s:3,rl:4,rh:6,rs:180,nt:'Heavy. Brace hard, below parallel. Never grind a rep.',m:['Quads','Glutes'],o:'legs',alt:['Hack Squat','Leg Press']},
@@ -346,7 +346,7 @@ const PG=[
     {nm:'Trap Bar Deadlift',tg:'s',s:2,rl:5,rh:8,rs:150,nt:'Two ramp sets first. Two hard sets is enough after squats.',m:['Glutes','Quads','Hamstrings','Back'],o:'full',alt:['Barbell Hip Thrust','Barbell RDL']}]},
   {n:'Hypertrophy',ex:[{nm:'Chest-Supported Row',tg:'h',s:2,rl:8,rh:12,rs:60,nt:'T-bar or machine with a chest pad.',m:['Back','Biceps','Rear Delts'],ss:'C',o:'upper',alt:['Seated Cable Row']},
     {nm:'Seated Leg Curl',tg:'h',s:2,rl:8,rh:12,rs:60,nt:'Pause with the pad fully curled.',m:['Hamstrings'],ss:'C',o:'heavy',alt:['Lying Leg Curl']},
-    {nm:'Machine Lateral Raise',tg:'h',s:3,rl:12,rh:20,rs:45,nt:'1s pause at the top.',m:['Side Delts'],ss:'D',o:'full',alt:['Cable Lateral Raise']},
+    {nm:'Lateral Raises',tg:'h',s:3,rl:12,rh:20,rs:45,nt:'Lead with elbows, 1s pause at the top.',m:['Side Delts'],ss:'D',o:'full',alt:['Machine Lateral Raise','Cable Lateral Raise']},
     {nm:'Standing Calf Raises',tg:'h',s:2,rl:8,rh:15,rs:45,nt:'Full stretch at the bottom.',m:['Calves'],ss:'D',o:'heavy',alt:['Leg Press Calf Raise']}]}
 ]},
 {id:'r2',n:'Mon',dw:1,t:'Easy Cardio',f:'40–45 min easy bike or walk · Lights out early',rst:1,cl:'#333'}
