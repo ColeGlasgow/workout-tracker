@@ -38,8 +38,8 @@ async function log(page, lift, set, lb, reps) {
 // Last week (W1) every incline set hit the top of the 6-10 range; this week is W2.
 const lastWeek = { rf5w: '1', rf5: Object.fromEntries([10, 10, 11, 10].map((r, i) =>
   [`0.push.Incline DB Press.${i}`, { w: '60', r: String(r), d: true }])) };
-// Six bench sessions; Oct 4 was the deload (week 5 of cycle 1), and today is cycle 2.
-const bench = { rf5c: '1', rf5: Object.fromEntries([[0, 205, '09-06'], [1, 210, '09-13'], [2, 215, '09-20'], [3, 220, '09-27'], [4, 185, '10-04'], [5, 230, '10-11']]
+// Six bench sessions; Oct 4 was the deload (week 8 of cycle 1), and today is cycle 2.
+const bench = { rf5c: '1', rf5: Object.fromEntries([[0, 205, '09-06'], [1, 210, '09-13'], [2, 215, '09-20'], [3, 220, '09-27'], [7, 185, '10-04'], [8, 230, '10-11']]
   .map(([w, lb, d]) => [`${w}.push.Barbell Bench Press.0`, { w: String(lb), r: '5', d: true, t: at('2026-' + d) }])) };
 
 test('every screen loads without errors, sideways scrolling or clipped cards', async ({ page }) => {
@@ -170,7 +170,7 @@ test('a new week starts on its own once the last one has sets', async ({ page, c
   await open(same, { store: { rf5w: '0', rf5: one(0, '2026-10-13') } });  // this Tuesday: still this week
   await expect(same.locator('.si.on')).toHaveText('W1');
   const dl = await context.newPage();
-  await open(dl, { store: { rf5w: '4', rf5: one(4, '2026-10-11') } });  // deload done → next cycle
+  await open(dl, { store: { rf5w: '7', rf5: one(7, '2026-10-11') } });  // deload done → next cycle
   await expect(dl.locator('.si.on')).toHaveText('W1');
   await expect(dl.locator('#v_home .hd-s')).toHaveText("Cole's Training · Cycle 2");
 });
@@ -241,7 +241,7 @@ test('the chosen week is remembered and the deload starts the next cycle', async
   await page.locator('.si').nth(2).click();
   await page.reload();
   await expect(page.locator('.si.on')).toHaveText('W3');
-  await page.locator('.si').nth(4).click();
+  await page.locator('.si').last().click();
   await page.locator('.nc').click();
   await expect(page.locator('#v_home .hd-s')).toHaveText("Cole's Training · Cycle 2");
   await expect(page.locator('.si.on')).toHaveText('W1');

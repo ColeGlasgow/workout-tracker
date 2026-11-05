@@ -281,15 +281,17 @@ input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appear
 <script>
 const A={nm:'Cole',ht:"6'2\"",wt:197,bf:8,lbm:180.3};
 const VOL={Chest:{e:10,a:16,m:22},Back:{e:10,a:18,m:25},'Side Delts':{e:8,a:19,m:26},'Rear Delts':{e:8,a:19,m:26},'Front Delts':{e:0,a:7,m:12},Biceps:{e:8,a:17,m:26},Triceps:{e:6,a:12,m:18},Quads:{e:8,a:15,m:20},Hamstrings:{e:6,a:13,m:20},Glutes:{e:0,a:8,m:16},Calves:{e:8,a:14,m:20},Abs:{e:0,a:18,m:25}};
-const WK=[{w:1,l:'Accumulation 1',r:'1 RIR',vm:0,dl:0},{w:2,l:'Accumulation 2',r:'1 RIR',vm:0,dl:0},{w:3,l:'Accumulation 3',r:'1 RIR',vm:0,dl:0},{w:4,l:'Overreach',r:'0–1 RIR',vm:0,dl:0},{w:5,l:'Deload',r:'4+ RIR',vm:-3,dl:1}];
+// 8-week cycle: six weeks at 1 RIR, an overreach week, then the deload (tap DL from W6 on to take it early)
+const WK=[...[1,2,3,4,5,6].map(w=>({w,l:'Accumulation '+w,r:'1 RIR',vm:0,dl:0})),{w:7,l:'Overreach',r:'0–1 RIR',vm:0,dl:0,or:1},{w:8,l:'Deload',r:'4+ RIR',vm:-3,dl:1}];
+const CL=WK.length,PW=w=>WK[w%CL];  // PW: the program week of an absolute week number
 let cw=0,cdy=null;
-try{cw=Math.min(4,+localStorage.getItem('rf5w')||0)}catch{}
+try{cw=Math.min(CL-1,+localStorage.getItem('rf5w')||0)}catch{}
 const svW=()=>{try{localStorage.setItem('rf5w',cw);localStorage.setItem('rf5c',cyc)}catch{}};
 // New week: when the newest set logged in the app's week is from before this Tuesday, move on one week (after the
 // deload, to the next cycle). A week with nothing logged never moves, so time off doesn't skip weeks.
 const tw=t=>Math.floor((Math.floor((t-new Date(t).getTimezoneOffset()*6e4)/864e5)+2)/7);  // weeks start Tuesday
 function nW(){const st=gs(),pre=AW()+'.';let last=0;for(const k in st)if(k.startsWith(pre)&&st[k]?.d)last=Math.max(last,+st[k].t||0);
-  if(!last||tw(last)>=tw(Date.now()))return;if(cw===4){cyc++;cw=0}else cw++;svW();rH();toast(`${WK[cw].dl?'Deload':'Week '+(cw+1)} started`)}
+  if(!last||tw(last)>=tw(Date.now()))return;if(cw===CL-1){cyc++;cw=0}else cw++;svW();rH();toast(`${WK[cw].dl?'Deload':'Week '+(cw+1)} started`)}
 
 // Legs Wed + Sat (3-4 days apart), upper Tue/Thu/Sun, heavy barbell work on weekends at Crunch.
 // alt = swaps that work in the same gym. o = the day a lift's saved sets live under (keeps history, and
@@ -352,7 +354,7 @@ const PG=[
 {id:'r2',n:'Mon',dw:1,t:'Easy Cardio',f:'40–45 min easy bike or walk · Lights out early',rst:1,cl:'#333'}
 ];
 let cyc=0;try{cyc=+localStorage.getItem('rf5c')||0}catch{}
-const AW=()=>cyc*5+cw;
+const AW=()=>cyc*CL+cw;
 let SW={};try{SW=JSON.parse(localStorage.getItem('rf5s'))||{}}catch{}
 const SN=(d,e,w=AW())=>SW[`${w}.${d}.${e.nm}`]||e.nm;
 function swp(d,nm,to){const k=`${AW()}.${d}.${nm}`;if(to===nm)delete SW[k];else SW[k]=to;try{localStorage.setItem('rf5s',JSON.stringify(SW))}catch{}
@@ -372,13 +374,13 @@ const sd=(w,d,e,i,v)=>{const s=gs();s[sk(w,d,e,i)]=v;_s(s)};
 // progression); below the bottom, take 5 lb off. Every set gets that target until you log one: then your newest
 // set today sets the rest (beat it and they go up, come up short and they come down).
 // Pull-up/chin-up weight is added load, so bodyweight counts.
-const RQ=(w,ex)=>w%5===4?4:ex.tg!=='h'?1.5:w%5===3?.5:1;  // Cole trains at ~1 RIR: STR/PWR lifts 1-2 every week, the rest 1 (0-1 in W4), deload 4+
+const RQ=(w,ex)=>PW(w).dl?4:ex.tg!=='h'?1.5:PW(w).or?.5:1;  // Cole trains at ~1 RIR: STR/PWR lifts 1-2 every week, the rest 1 (0-1 in W7), deload 4+
 const INC=5;  // ponytail: one step for every lift; per-lift steps if a cable stack jumps 10
 const RMAX=50;  // more reps than this is a typo (a weight typed into the reps box)
 const BW=()=>{const d=Object.keys(HL).sort().reverse().find(k=>+HL[k].weight>0);return d?+HL[d].weight:A.wt};
 const okS=v=>v?.d&&+v.r>0&&+v.r<=RMAX;
 function best(st,w,d,nm,bw){const sc=v=>((+v.w||0)+bw+1)*(1+ +v.r/30);
-  for(let pw=w-1;pw>=Math.max(0,w-5);pw--){if(pw%5===4)continue;let p;
+  for(let pw=w-1;pw>=Math.max(0,w-5);pw--){if(PW(pw).dl)continue;let p;
     for(let j=0;j<9;j++){const v=st[sk(pw,d,nm,j)];if(okS(v)&&(!p||sc(v)>sc(p)))p=v}
     if(p)return[p,pw]}return[]}
 function tgt(d,ex,i,live=1){const st=gs(),w=AW(),bw=/Pull-Up|Chin-Up/.test(ex.nm)?BW():0,[p,pw]=best(st,w,d,ex.nm,bw);
@@ -440,7 +442,7 @@ const rng=(sz,sw,pct,clr)=>{const r=(sz-sw)/2,c=2*Math.PI*r,o=c*(1-Math.min(100,
 function rH(){
   document.getElementById('wSeg').innerHTML=WK.map((w,i)=>`<div class="si ${i===cw?'on':''}" onclick="cw=${i};svW();rH()">${w.dl?'DL':'W'+w.w}</div>`).join('');
   const wk=WK[cw];
-  document.getElementById('bnr').innerHTML=`<div class="bn ${wk.dl?'dl':'nm'}"><div class="bn-d" style="background:${wk.dl?'var(--gn)':'var(--ac)'}"></div><div class="bn-t"><b>${wk.l}</b> — ${wk.dl?'Cut volume & load. Recovery week.':wk.w===4?'Isolation to 0–1. STR lifts stay at 1–2.':'Stop with 1 rep left, 1–2 on STR lifts. Beat last week’s targets.'}</div><div class="bn-r">${wk.r}</div></div>${wk.dl?`<button class="nc" onclick="cyc++;cw=0;svW();rH()">Done with the deload? Start cycle ${cyc+2} →</button>`:''}`;
+  document.getElementById('bnr').innerHTML=`<div class="bn ${wk.dl?'dl':'nm'}"><div class="bn-d" style="background:${wk.dl?'var(--gn)':'var(--ac)'}"></div><div class="bn-t"><b>${wk.l}</b> — ${wk.dl?'Cut volume & load. Recovery week.':wk.or?'Isolation to 0–1. STR lifts stay at 1–2.':'Stop with 1 rep left, 1–2 on STR lifts. Beat last week’s targets.'}</div><div class="bn-r">${wk.r}</div></div>${wk.dl?`<button class="nc" onclick="cyc++;cw=0;svW();rH()">Done with the deload? Start cycle ${cyc+2} →</button>`:''}`;
   document.querySelector('#v_home .hd-s').textContent=`Cole's Training · Cycle ${cyc+1}`;
   
   const td=new Date().getDay(),isT=d=>[].concat(d.dw).includes(td);
@@ -561,7 +563,7 @@ function rD(){
     const dl=Math.round(ss.at(-1).v-ss[0].v);
     return`<div class="lp"><div class="lpn">${nm}<div class="lps">${ss.length} session${ss.length>1?'s':''}${dl?` · <b class="${dl>0?'up':'dn'}">${dl>0?'+':''}${dl} ${u}</b>`:''}</div></div>${spk(ss.map(x=>({v:x.v,l:dtL(x.t)||wkL(x.w)})))}<div class="lpv">${Math.round(ss.at(-1).v)}<span>${u}</span></div></div>`}).join('')+`</div>`;
   h+=body();
-  h+=`<div class="sg"><div class="sgi"><div class="sgv">${WK[cw].r.split(' ')[0]}</div><div class="sgl">Target RIR</div></div><div class="sgi"><div class="sgv">W${WK[cw].w}<span style="color:var(--tx4)">/5</span></div><div class="sgl">Mesocycle</div></div></div>`;
+  h+=`<div class="sg"><div class="sgi"><div class="sgv">${WK[cw].r.split(' ')[0]}</div><div class="sgl">Target RIR</div></div><div class="sgi"><div class="sgv">W${WK[cw].w}<span style="color:var(--tx4)">/${CL}</span></div><div class="sgl">Mesocycle</div></div></div>`;
   
   // Volume
   const plan={},done={};Object.keys(VOL).forEach(m=>{plan[m]=0;done[m]=0});
@@ -573,9 +575,9 @@ function rD(){
   
   // Meso
   h+=`<div class="gc"><div class="gct">Mesocycle Progress</div><div class="bars" style="height:72px">`;
-  for(let w=0;w<5;w++){let ws=0,wd=0;const ow=cw;cw=w;PG.forEach(d=>{if(d.rst||d.alt)return;d.sc.forEach(s=>s.ex.forEach(e=>{if(e.nT)return;const ns=eS(e);for(let i=0;i<ns;i++){ws++;if(gd(cyc*5+w,d.id,SN(d.id,e,cyc*5+w),i).d)wd++}}))});cw=ow;const wp=ws?wd/ws*100:0;
+  for(let w=0;w<CL;w++){let ws=0,wd=0;const ow=cw;cw=w;PG.forEach(d=>{if(d.rst||d.alt)return;d.sc.forEach(s=>s.ex.forEach(e=>{if(e.nT)return;const ns=eS(e);for(let i=0;i<ns;i++){ws++;if(gd(cyc*CL+w,d.id,SN(d.id,e,cyc*CL+w),i).d)wd++}}))});cw=ow;const wp=ws?wd/ws*100:0;
     h+=`<div class="bar" style="height:${Math.max(5,wp)}%;background:${w===cw?'var(--ac)':wp>0?'var(--s5)':'var(--s3)'};${w===cw?'box-shadow:0 0 12px rgba(59,130,246,.25)':''}"></div>`;
-  }h+=`</div><div class="bars-l"><span>W1</span><span>W2</span><span>W3</span><span>W4</span><span>DL</span></div></div>`;
+  }h+=`</div><div class="bars-l">${WK.map(w=>`<span>${w.dl?'DL':'W'+w.w}</span>`).join('')}</div></div>`;
   document.getElementById('dshB').innerHTML=h;
 }
 
@@ -584,12 +586,12 @@ function rP(){
   let h=`<div class="pc"><div class="pct">Athlete</div>`;
   [{l:'Name',v:A.nm},{l:'Height',v:A.ht},{l:'Weight',v:A.wt+' lbs'},{l:'Body Fat',v:'~'+A.bf+'%'},{l:'Lean Mass',v:A.lbm+' lbs'},{l:'Background',v:'D1 Basketball'},{l:'Goal',v:'Athletic Aesthetic'},{l:'Reference',v:'Brian Pruett'}].forEach(r=>h+=`<div class="pr"><div class="prl">${r.l}</div><div class="prv">${r.v}</div></div>`);
   h+=`</div><div class="pc"><div class="pct">Program</div>`;
-  [{l:'Split',v:'Upper / Legs / Delts-Arms · Heavy Legs / Heavy Upper'},{l:'Schedule',v:'Tue–Thu work gym · Sat–Sun Crunch'},{l:'One-day weekend',v:'Full Body (~65 min)'},{l:'Frequency',v:'5 days/week'},{l:'Muscle Freq',v:'Legs 2× · Upper 3×'},{l:'Mesocycle',v:'5 weeks (4 + deload)'},{l:'Progression',v:'Double Progression + RIR'},{l:'Periodization',v:'4 weeks at 1 RIR + deload'}].forEach(r=>h+=`<div class="pr"><div class="prl">${r.l}</div><div class="prv">${r.v}</div></div>`);
+  [{l:'Split',v:'Upper / Legs / Delts-Arms · Heavy Legs / Heavy Upper'},{l:'Schedule',v:'Tue–Thu work gym · Sat–Sun Crunch'},{l:'One-day weekend',v:'Full Body (~65 min)'},{l:'Frequency',v:'5 days/week'},{l:'Muscle Freq',v:'Legs 2× · Upper 3×'},{l:'Mesocycle',v:'8 weeks (7 + deload)'},{l:'Progression',v:'Double Progression + RIR'},{l:'Periodization',v:'6 weeks at 1 RIR, overreach, deload'}].forEach(r=>h+=`<div class="pr"><div class="prl">${r.l}</div><div class="prv">${r.v}</div></div>`);
   h+=`</div><div class="pc"><div class="pct">How It Works</div><div style="padding:8px 20px 18px;font-size:14px;color:var(--tx2);line-height:1.65">`;
   h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">Progressive Overload</b> — Hit the top of the rep range → add weight next session.</p>`;
-  h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">Your Week</b> — Tue–Thu at the work gym, 45–50 min, using only DBs, cables, the Smith, the pull-up/dip station, leg extension and leg curl. Legs are Wed and Sat, 3–4 days apart. Heavy barbell work is on the weekend at Crunch, about 65 min each day. Only one weekend day free? Do Full Body instead.</p><p style="margin-bottom:10px"><b style="color:var(--tx)">Effort</b> — Sets stay the same each week so sessions fit. Every set ends about 1 rep short of failure; W4 takes isolation to 0–1; W5 is recovery.</p>`;
-  h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">RIR</b> — Reps in Reserve: how many more clean reps you could have done. On accessories like lateral raises, flyes and face pulls, a rep that loses the squeeze doesn’t count, so stop there: that’s your 0–1. 1 on most sets, 0–1 on isolation in W4. STR lifts (squat, bench, deadlifts, cleans, weighted pull-ups) stay at 1–2: going to failure there costs the most recovery, especially on short sleep.</p>`;
-  h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">Next Cycle</b> — In the DL week, tap Start cycle 2. Your history stays, and W1 shows your last W4 numbers. Swap exercises every 2–3 mesocycles.</p>`;
+  h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">Your Week</b> — Tue–Thu at the work gym, 45–50 min, using only DBs, cables, the Smith, the pull-up/dip station, leg extension and leg curl. Legs are Wed and Sat, 3–4 days apart. Heavy barbell work is on the weekend at Crunch, about 65 min each day. Only one weekend day free? Do Full Body instead.</p><p style="margin-bottom:10px"><b style="color:var(--tx)">Effort</b> — Sets stay the same each week so sessions fit. Every set ends about 1 rep short of failure; W7 takes isolation to 0–1; W8 is recovery. From W6 on, if reps drop on most lifts two sessions running or a joint nags, tap DL and take it early.</p>`;
+  h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">RIR</b> — Reps in Reserve: how many more clean reps you could have done. On accessories like lateral raises, flyes and face pulls, a rep that loses the squeeze doesn’t count, so stop there: that’s your 0–1. 1 on most sets, 0–1 on isolation in W7. STR lifts (squat, bench, deadlifts, cleans, weighted pull-ups) stay at 1–2: going to failure there costs the most recovery, especially on short sleep.</p>`;
+  h+=`<p style="margin-bottom:10px"><b style="color:var(--tx)">Next Cycle</b> — In the DL week, tap Start cycle 2. Your history stays, and W1 shows your last numbers before the deload. Swap exercises every 2–3 mesocycles.</p>`;
   h+=`<p><b style="color:var(--tx)">Logging</b> — The gray numbers in each set are your target, worked out from last time and this week’s RIR. Fill both boxes, or tap the circle to log the target as is. Targets move as you go: beat one (more reps, or more weight) and your next sets go up; come up short and they come down. Next week builds on what you actually logged. ↑ ADD 5 LB is the most a target went up from last time.</p><p style="margin-top:10px"><b style="color:var(--tx)">Rest Timer</b> — Starts when you log. It keeps time when your phone locks, beeps at zero and shows what’s next. Tap “Next” to jump there.</p><p style="margin-top:10px"><b style="color:var(--tx)">Swap</b> — Machine taken or no room? Tap ⇄ Swap on any lift and pick a stand-in. It lasts for this week only and keeps its own history.</p></div></div>`;
   const lb=+localStorage.getItem('rf5b')||0;
   h+=`<div class="pc"><div class="pct">Garmin · Apple Health</div><div id="syncMsg" style="padding:4px 20px 12px;font-size:13px;color:var(--tx3);line-height:1.5">${HK?syncMsg||'Connected.':'Not connected. Paste your drop box key to pull in sleep, weight, resting heart rate and steps, and to back up your log automatically.'}</div><div class="wrw" style="padding:0 20px 18px;margin:0"><input id="kIn" type="password" autocomplete="off" placeholder="${HK?'Key saved · paste to replace':'Paste your key'}" aria-label="Drop box key"><button class="bkb" onclick="svK()">${HK?'Replace':'Connect'}</button></div></div>`;
@@ -614,11 +616,11 @@ function hist(day,nm){const st=gs(),by={};
   for(const k in st){const v=st[k],m=k.match(/^(\d+)\.([a-z0-9]+)\.(.+)\.(\d+)$/);if(!okS(v)||!m||m[2]!==day||m[3]!==nm)continue;(by[m[1]]||=[]).push({...v,i:+m[4]})}
   const ss=Object.keys(by).map(Number).sort((a,b)=>a-b).map(w=>({w,s:by[w].sort((a,b)=>a.i-b.i),t:Math.max(0,...by[w].map(v=>+v.t||0))}));
   const wtd=ss.some(x=>x.s.some(v=>+v.w>0));
-  ss.forEach(x=>x.dl=x.w%5===4);
+  ss.forEach(x=>x.dl=PW(x.w).dl);
   ss.forEach(x=>x.v=Math.max(...x.s.map(v=>wtd?(+v.w>0?+v.w*(1+(+v.r)/30):0):+v.r)));
   const all=ss.filter(x=>x.v>0),pr=all.filter(x=>!x.dl);
   return{all,ss:pr.length?pr:all,u:wtd?'lb':'reps'}}
-const wkL=w=>`C${Math.floor(w/5)+1} ${w%5===4?'DL':'W'+(w%5+1)}`;
+const wkL=w=>`C${Math.floor(w/CL)+1} ${PW(w).dl?'DL':'W'+(w%CL+1)}`;
 const dtL=t=>t?new Date(t).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'';
 // sparkline: muted line and faint area, the latest point in the accent; each point carries a native tooltip
 function spk(pts,W=110,H=34){if(pts.length<2)return'';const vs=pts.map(p=>p.v),lo=Math.min(...vs),r=Math.max(...vs)-lo||1,P=5;
@@ -639,7 +641,7 @@ async function api(p,o={}){const r=await fetch('/api/'+p,{...o,cache:'no-store',
 async function pull(){if(!HK)return;try{const[h,l]=await Promise.all([api('health'),api('log')]),fresh=!Object.keys(gs()).length;
     for(const d in h)if(/^\d{4}-\d{2}-\d{2}$/.test(d))HL[d]={...HL[d],...h[d]};svH();
     const n=l.data?mrg(l.data):0;
-    if(fresh&&Number.isInteger(l.cyc)&&l.cyc>=0&&Number.isInteger(l.cw)&&l.cw>=0&&l.cw<5){cyc=l.cyc;cw=l.cw;svW()}
+    if(fresh&&Number.isInteger(l.cyc)&&l.cyc>=0&&Number.isInteger(l.cw)&&l.cw>=0&&l.cw<CL){cyc=l.cyc;cw=l.cw;svW()}
     pulled=true;syncMsg=`Connected · synced ${new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}`;if(n||fresh)rH();psh();
   }catch(e){syncMsg=e instanceof TypeError?'No signal. Syncs when you’re back online.':e.message}
   const el=document.getElementById('syncMsg');if(el)el.textContent=syncMsg}
