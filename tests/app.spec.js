@@ -197,6 +197,14 @@ test('the add-weight cue shows only when a target goes up', async ({ page }) => 
   await expect(page.locator('#e_WeightedPullUps .exp.up')).toHaveCount(0);
 });
 
+test('hang cleans hold last time’s weight instead of climbing', async ({ page }) => {
+  const set = (i, w) => [`0.heavy.Hang Clean (Technique).${i}`, { w, r: '3', d: true }];
+  await open(page, { time: SAT, store: { rf5w: '1', rf5: Object.fromEntries([set(0, '135'), set(1, '145'), set(2, '145')]) } });
+  await day(page, DAY.sat);
+  for (const i of [0, 4]) await expect(row(page, 'Hang Clean (Technique)', i).locator('input').first()).toHaveAttribute('placeholder', '145');
+  await expect(page.locator('#e_HangCleanTechnique .exp.up')).toHaveCount(0);
+});
+
 test('the rest timer alternates superset partners and keeps real time', async ({ page }) => {
   await open(page, { install: true });
   await day(page, DAY.tue);
